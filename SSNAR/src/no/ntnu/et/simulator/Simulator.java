@@ -24,7 +24,7 @@ public class Simulator {
     private SimulatorGUI gui;
     private boolean estimateNoiseEnabled;
     private boolean sensorNoiseEnabled;
-    HashMap<Integer, SimRobotHandler> robotHandlers;
+    HashMap<Integer, RobotHandler> robotHandlers;
     private double simulationSpeed;
     private Inbox inbox;
     private int mode;
@@ -48,7 +48,7 @@ public class Simulator {
         }
         String mapPath = allMaps[0].getAbsolutePath();
         world.initMap(mapPath);
-        robotHandlers = new HashMap<Integer, SimRobotHandler>();
+        robotHandlers = new HashMap<Integer, RobotHandler>();
         estimateNoiseEnabled = true;
         sensorNoiseEnabled = true;
         this.mode = mode;
@@ -96,7 +96,7 @@ public class Simulator {
      */
     public void stop() {
         // Uses the closing routine defined in initializeGUI
-        for (HashMap.Entry<Integer, SimRobotHandler> entry : robotHandlers.entrySet()) {
+        for (HashMap.Entry<Integer, RobotHandler> entry : robotHandlers.entrySet()) {
             entry.getValue().interrupt();
         }
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -109,8 +109,13 @@ public class Simulator {
 
     public void connectToRobot(int id) {
         if (!robotHandlers.containsKey(id)) {
-            BasicRobot robot = world.getRobot(id);
-            SimRobotHandler robotHandler = this.new SimRobotHandler(robot);
+            SimRobot robot = world.getRobot(id);
+            RobotHandler robotHandler;
+            if (id == 0) {
+                robotHandler = this.new SlamRobotHandler((SlamRobot)robot);
+            } else {
+                robotHandler = this.new SimRobotHandler((BasicRobot)robot);
+            }
             robotHandler.setName("Robot " + Integer.toString(id));
             robotHandlers.put(id, robotHandler);
             robotHandlers.get(id).start();
