@@ -278,4 +278,11 @@ public class Simulator {
             }
         }
     }
+    
+    private class SlamRobotHandler extends RobotHandler {
+        
+        SlamRobotHandler(SlamRobot robot) {
+            super(robot);
+        }
+    }
 }
