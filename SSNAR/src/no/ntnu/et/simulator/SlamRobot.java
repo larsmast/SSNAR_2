@@ -8,6 +8,7 @@
  */
 package no.ntnu.et.simulator;
 
+import java.util.concurrent.LinkedBlockingQueue;
 import no.ntnu.et.general.Pose;
 
 /**
@@ -16,9 +17,26 @@ import no.ntnu.et.general.Pose;
  */
 public class SlamRobot extends SimRobot {
     private int[][] mapWindow;
+    private LinkedBlockingQueue<int[]> measurementQueue;
     
     public SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         mapWindow = new int[100][100];
+        measurementQueue = new LinkedBlockingQueue(5);
+    }
+    
+    /**
+     * Adds a measurement to the internal measurementQueue.
+     * 
+     * @param meas
+     * @return True if successful. Throws IllegalStateException is queue is full.
+     */
+    boolean addMeasurement(int[] meas) {
+        try {
+            return measurementQueue.add(meas);
+        } catch (Exception e) {
+            System.err.println("Exception in addMeasurement: " + e.getMessage());
+            return false;
+        }
     }
 }
