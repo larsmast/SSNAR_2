@@ -109,7 +109,7 @@ public class Simulator {
 
     public void connectToRobot(int id) {
         if (!robotHandlers.containsKey(id)) {
-            SimRobot robot = world.getRobot(id);
+            BasicRobot robot = world.getRobot(id);
             SimRobotHandler robotHandler = this.new SimRobotHandler(robot);
             robotHandler.setName("Robot " + Integer.toString(id));
             robotHandlers.put(id, robotHandler);
@@ -191,11 +191,11 @@ public class Simulator {
     }
 
     /**
-    * Controller object for a robot of type SimRobot. This class contains
-    * a SimRobot object and is responsible for making that robot run.
+    * Controller object for a robot of type BasicRobot. This class contains
+ a BasicRobot object and is responsible for making that robot run.
     */
     private class SimRobotHandler extends RobotHandler {
-        final private SimRobot myRobot;
+        final private BasicRobot myRobot;
         final private String myName;
         final private int myID;
         private double estimateNoise;
@@ -206,9 +206,9 @@ public class Simulator {
         /**
          * Constructor
          *
-         * @param robot SimRobot
+         * @param robot BasicRobot
          */
-        public SimRobotHandler(SimRobot robot) {
+        public SimRobotHandler(BasicRobot robot) {
             myRobot = robot;
             myName = robot.getName();
             myID = robot.getId();
@@ -259,7 +259,7 @@ public class Simulator {
                     }
                     myRobot.measureIR(sensorNoise);
                     int[] update = myRobot.createMeasurement();
-                    String updateMsg = SimRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
+                    String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
                     counter = 0;
@@ -337,7 +337,7 @@ public class Simulator {
                     }
                     myRobot.measureIR(sensorNoise);
                     int[] update = myRobot.createMeasurement();
-                    String updateMsg = SimRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
+                    String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
                     counter = 0;

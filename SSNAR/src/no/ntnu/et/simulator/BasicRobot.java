@@ -20,7 +20,7 @@ import no.ntnu.et.general.Line;
  * 
  * @author Eirik Thon
  */
-public class SimRobot {
+public class BasicRobot {
     private SimWorld world;
     private Pose pose;
     private Pose estimatedPose;
@@ -53,7 +53,7 @@ public class SimRobot {
      * @param name
      * @param id 
      */
-    public SimRobot(SimWorld world, Pose initialPose, String name, int id) {
+    public BasicRobot(SimWorld world, Pose initialPose, String name, int id) {
         this.world = world;
         towerDirection = 1;
         towerAngle = new Angle(0);

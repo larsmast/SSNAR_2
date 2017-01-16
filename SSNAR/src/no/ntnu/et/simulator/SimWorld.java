@@ -26,7 +26,7 @@ public class SimWorld {
     private int width;
     private int height;
     ArrayList<Feature> features;
-    ArrayList<SimRobot> robots;
+    ArrayList<BasicRobot> robots;
     ArrayList<Integer> robotIDs;
     private ArrayList<String[]> possibleRobotNames;
 
@@ -37,7 +37,7 @@ public class SimWorld {
         width = 0;
         height = 0;
         features = new ArrayList<Feature>(0);
-        robots = new ArrayList<SimRobot>(0);
+        robots = new ArrayList<BasicRobot>(0);
         robotIDs = new ArrayList<Integer> (0);
         possibleRobotNames = new ArrayList<String[]>();
         populateRobotNames();
@@ -69,7 +69,7 @@ public class SimWorld {
         return features;   
     }
     
-    ArrayList<SimRobot> getRobots() {
+    ArrayList<BasicRobot> getRobots() {
         return robots;
     }
     private void populateRobotNames() {
@@ -89,12 +89,12 @@ public class SimWorld {
         String[] identification = possibleRobotNames.remove(0);
         int id = Integer.parseInt(identification[0]);
         String name = identification[1];
-        SimRobot newRobot;
+        BasicRobot newRobot;
         if (name.equals("SlamRobot")) {
             newRobot = new SlamRobot(this, initialPose, name, id);
             System.out.println("SlamRobot created");
         } else {
-            newRobot = new SimRobot(this, initialPose, name, id);
+            newRobot = new BasicRobot(this, initialPose, name, id);
             System.out.println("SimRobot created");
         }
         robotIDs.add(id);
@@ -154,7 +154,7 @@ public class SimWorld {
         return shortestMeasurement;
     }
     
-    SimRobot getRobot(int id) {
+    BasicRobot getRobot(int id) {
         return robots.get(id);
     }
     

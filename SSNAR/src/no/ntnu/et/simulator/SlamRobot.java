@@ -14,7 +14,7 @@ import no.ntnu.et.general.Pose;
  *
  * @author geirhei
  */
-public class SlamRobot extends SimRobot {
+public class SlamRobot extends BasicRobot {
     private int[][] mapWindow;
     
     public SlamRobot(SimWorld world, Pose initialPose, String name, int id) {

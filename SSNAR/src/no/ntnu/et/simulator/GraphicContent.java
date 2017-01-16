@@ -136,7 +136,7 @@ public class GraphicContent extends javax.swing.JPanel {
     }
     
     private void paintRobots(Graphics2D g2D) {
-        ArrayList<SimRobot> robots = world.getRobots();
+        ArrayList<BasicRobot> robots = world.getRobots();
         for(int i = 0; i < robots.size(); i++){
             Color color = Utilities.selectColor(i);
             g2D.setPaint(color);
@@ -145,7 +145,7 @@ public class GraphicContent extends javax.swing.JPanel {
     }
     
     private void paintEstimatedPositions(Graphics2D g2D){
-        ArrayList<SimRobot> robots = world.getRobots();
+        ArrayList<BasicRobot> robots = world.getRobots();
         for(int i = 0; i < robots.size(); i++){
             Color color = Utilities.selectColor(i);
             g2D.setPaint(color);
@@ -158,7 +158,7 @@ public class GraphicContent extends javax.swing.JPanel {
     }
 
     private void paintTargetPositions(Graphics2D g2D){
-        ArrayList<SimRobot> robots = world.getRobots();
+        ArrayList<BasicRobot> robots = world.getRobots();
         for(int i = 0; i < robots.size(); i++){
             Color color = Utilities.selectColor(i);
             g2D.setPaint(color);
@@ -169,7 +169,7 @@ public class GraphicContent extends javax.swing.JPanel {
     }
     
     private void paintSensorBeams(Graphics2D g2D){
-        ArrayList<SimRobot> robots = world.getRobots();
+        ArrayList<BasicRobot> robots = world.getRobots();
         for(int i = 0; i < robots.size(); i++){
             Color color = Utilities.selectColor(i);
             g2D.setPaint(color);
