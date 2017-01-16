@@ -73,7 +73,7 @@ public class SimWorld {
         return robots;
     }
     private void populateRobotNames() {
-        possibleRobotNames.add(new String[]{"0", "AVR1"});
+        possibleRobotNames.add(new String[]{"0", "SlamRobot"});
         possibleRobotNames.add(new String[]{"1", "Arduino1"});
         possibleRobotNames.add(new String[]{"2", "NXT1"});
         possibleRobotNames.add(new String[]{"3", "AVR2"});
@@ -89,7 +89,14 @@ public class SimWorld {
         String[] identification = possibleRobotNames.remove(0);
         int id = Integer.parseInt(identification[0]);
         String name = identification[1];
-        SimRobot newRobot = new SimRobot(this, initialPose, name, id);
+        SimRobot newRobot;
+        if (name.equals("SlamRobot")) {
+            newRobot = new SlamRobot(this, initialPose, name, id);
+            System.out.println("SlamRobot created");
+        } else {
+            newRobot = new SimRobot(this, initialPose, name, id);
+            System.out.println("SimRobot created");
+        }
         robotIDs.add(id);
         robots.add(newRobot);
     }
