@@ -24,7 +24,7 @@ public class Simulator {
     private SimulatorGUI gui;
     private boolean estimateNoiseEnabled;
     private boolean sensorNoiseEnabled;
-    HashMap<Integer, RobotHandler> robotHandlers;
+    HashMap<Integer, SimRobotHandler> robotHandlers;
     private double simulationSpeed;
     private Inbox inbox;
     private int mode;
@@ -48,7 +48,7 @@ public class Simulator {
         }
         String mapPath = allMaps[0].getAbsolutePath();
         world.initMap(mapPath);
-        robotHandlers = new HashMap<Integer, RobotHandler>();
+        robotHandlers = new HashMap<Integer, SimRobotHandler>();
         estimateNoiseEnabled = true;
         sensorNoiseEnabled = true;
         this.mode = mode;
@@ -96,7 +96,7 @@ public class Simulator {
      */
     public void stop() {
         // Uses the closing routine defined in initializeGUI
-        for (HashMap.Entry<Integer, RobotHandler> entry : robotHandlers.entrySet()) {
+        for (HashMap.Entry<Integer, SimRobotHandler> entry : robotHandlers.entrySet()) {
             entry.getValue().interrupt();
         }
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -110,7 +110,7 @@ public class Simulator {
     public void connectToRobot(int id) {
         if (!robotHandlers.containsKey(id)) {
             SimRobot robot = world.getRobot(id);
-            RobotHandler robotHandler = this.new RobotHandler(robot);
+            SimRobotHandler robotHandler = this.new SimRobotHandler(robot);
             robotHandler.setName("Robot " + Integer.toString(id));
             robotHandlers.put(id, robotHandler);
             robotHandlers.get(id).start();
@@ -190,12 +190,11 @@ public class Simulator {
         }
     }
 
-    private class RobotHandler extends Thread {
-
-        /**
-         * Controller object for a robot. This class contains a SimRobot object and
- is responsible for making that robot run.
-         */
+    /**
+    * Controller object for a robot of type SimRobot. This class contains
+    * a SimRobot object and is responsible for making that robot run.
+    */
+    private class SimRobotHandler extends RobotHandler {
         final private SimRobot myRobot;
         final private String myName;
         final private int myID;
@@ -209,20 +208,11 @@ public class Simulator {
          *
          * @param robot SimRobot
          */
-        public RobotHandler(SimRobot robot) {
+        public SimRobotHandler(SimRobot robot) {
             myRobot = robot;
             myName = robot.getName();
             myID = robot.getId();
             noiseGenerator = new Random();
-            paused = false;
-        }
-
-        void pause() {
-            paused = true;
-        }
-        
-        void unpause() {
-            paused = false;
         }
 
         /**
@@ -243,7 +233,7 @@ public class Simulator {
                 } catch (InterruptedException e) {
                     break;
                 }
-                if (paused) {
+                if (isPaused()) {
                     continue;
                 }
 
@@ -279,10 +269,81 @@ public class Simulator {
         }
     }
     
+    /**
+    * Controller object for a robot of type SlamRobot. This class contains
+    * a SlamRobot object and is responsible for making that robot run.
+    */
     private class SlamRobotHandler extends RobotHandler {
+        final private SlamRobot myRobot;
+        final private String myName;
+        final private int myID;
+        private double estimateNoise;
+        private double sensorNoise;
+        private final Random noiseGenerator;
         
-        SlamRobotHandler(SlamRobot robot) {
-            super(robot);
+        /**
+         * Constructor
+         *
+         * @param robot SlamRobot
+         */
+        public SlamRobotHandler(SlamRobot robot) {
+            myRobot = robot;
+            myName = robot.getName();
+            myID = robot.getId();
+            noiseGenerator = new Random();
+        }
+        
+        /**
+         * A continuous loop that calls methods of the robot in a specific way
+         * in order to generate the robot behavior.
+         */
+        @Override
+        public void run() {
+            int counter = 0;
+            String content = myRobot.getHandShakeMessage();
+            String dongleID = "[" + myID + "]:" + myName + ":";
+            String handshake = dongleID + content;
+            inbox.putMessage(handshake);
+            while (true) {
+                // Wait between each loop
+                try {
+                    Thread.sleep((int) (10 / simulationSpeed));
+                } catch (InterruptedException e) {
+                    break;
+                }
+                if (isPaused()) {
+                    continue;
+                }
+
+                // Move robot
+                if (estimateNoiseEnabled) {
+                    estimateNoise = noiseGenerator.nextGaussian() * 0.1;
+                } else {
+                    estimateNoise = 0;
+                }
+                if (myRobot.moveRobot(estimateNoise) == true) {
+                    String updateMsg = "{S,IDL}\n";
+                    String dongleSim = "[" + myID + "]:" + myName + ":";
+                    inbox.putMessage(dongleSim + updateMsg);
+                }
+                myRobot.turnTower();
+                
+                // Measure
+                if (counter > 19) { // Every 200 ms ( Counter is increased every 10 ms )
+                    if (sensorNoiseEnabled) {
+                        sensorNoise = noiseGenerator.nextGaussian() * 2;
+                    } else {
+                        sensorNoise = 0;
+                    }
+                    myRobot.measureIR(sensorNoise);
+                    int[] update = myRobot.createMeasurement();
+                    String updateMsg = SimRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
+                    String dongleSim = "[" + myID + "]:" + myName + ":";
+                    inbox.putMessage(dongleSim + updateMsg);
+                    counter = 0;
+                }
+                counter++;
+            }
         }
     }
 }
