@@ -4,7 +4,7 @@
  *
  * Geir Eikeland (Master 2017 @ NTNU)
  * 
- * Based on SimRobot.java
+ * Based on BasicRobot.java
  */
 package no.ntnu.et.simulator;
 
