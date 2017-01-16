@@ -3,17 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/mapping/MeasurementHandler.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/simulator/Simulator.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/mapping/MappingController.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/tem/application/Application.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/tem/communication/SerialCommunication.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/tem/communication/Inbox.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/tem/communication/Communication.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/tem/application/Installer.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/map/GridMap.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/general/Utilities.java</file>
-            <file>file:/U:/Legoprosjekt/Source%20Code%20SSNAR/SSNAR/src/no/ntnu/et/mapping/Sensor.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/mapping/MappingController.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/simulator/Feature.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/simulator/SimWorld.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/general/Pose.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/mapping/MeasurementHandler.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/simulator/SimRobot.java</file>
+            <file>file:/C:/Users/geirhei/Documents/ssnar/SSNAR/src/no/ntnu/et/simulator/SlamRobot.java</file>
         </group>
     </open-files>
 </project-private>

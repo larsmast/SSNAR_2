@@ -1,5 +1,5 @@
-﻿/*
- * This code is written as a part of a Master Thesis
+/**
+ * This code is written as part of a Master Thesis
  * the spring of 2017.
  *
  * Geir Eikeland (Master 2017 @ NTNU)
