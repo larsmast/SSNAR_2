@@ -59,4 +59,13 @@ public class SlamRobot extends SimRobot {
             return false;
         }
     }
+    
+    /**
+     * Returns and removes a measurement from the internal measurementQueue.
+     * 
+     * @return int[] if successful, null if no elements in queue
+     */
+    public int[] getMeasurement() {
+        return measurementQueue.poll();
+    }
 }

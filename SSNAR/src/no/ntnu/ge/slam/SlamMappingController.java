@@ -67,7 +67,7 @@ public class SlamMappingController extends Thread {
                 continue;
             }
             
-            currentMeasurement = measurementQueue.poll();
+            currentMeasurement = robot.getMeasurement();
             if (currentMeasurement == null) {
                 System.out.println("currentMeasurement = null");
                 continue;
