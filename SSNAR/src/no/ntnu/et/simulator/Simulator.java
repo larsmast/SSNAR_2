@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import javax.swing.JFrame;
+import no.ntnu.ge.slam.SlamMappingController;
 import no.ntnu.tem.communication.Inbox;
 
 /**
@@ -285,6 +286,7 @@ public class Simulator {
         private double estimateNoise;
         private double sensorNoise;
         private final Random noiseGenerator;
+        SlamMappingController mapping;
         
         /**
          * Constructor
@@ -296,6 +298,8 @@ public class Simulator {
             myName = robot.getName();
             myID = robot.getId();
             noiseGenerator = new Random();
+            mapping = new SlamMappingController(myRobot, inbox);
+            mapping.setName("Local mapping controller");
         }
         
         /**
@@ -304,6 +308,7 @@ public class Simulator {
          */
         @Override
         public void run() {
+            mapping.start();
             int counter = 0;
             String content = myRobot.getHandShakeMessage();
             String dongleID = "[" + myID + "]:" + myName + ":";

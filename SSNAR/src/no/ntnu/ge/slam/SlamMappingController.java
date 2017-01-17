@@ -72,6 +72,7 @@ public class SlamMappingController extends Thread {
                 System.out.println("currentMeasurement = null");
                 continue;
             }
+            System.out.println("currentMeasurement read");
             
         }
     }
