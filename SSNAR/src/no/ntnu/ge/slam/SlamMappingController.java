@@ -88,8 +88,9 @@ public class SlamMappingController extends Thread {
             // Find the location of the robot in the map
             MapLocation robotLocation = findLocationInMap(robotPosition);
             
-            // if changed: resize
-            
+            // Check if robot has moved, if so: shift window
+            shiftMapWindow(previousLocation, robotLocation);
+            previousLocation = robotLocation;
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
@@ -110,6 +111,26 @@ public class SlamMappingController extends Thread {
                     
             
             
+        }
+    }
+    
+    private boolean shiftMapWindow(MapLocation currentLoc, MapLocation newLoc) {
+        int dx = newLoc.getRow() - currentLoc.getRow();
+        int dy = newLoc.getColumn() - currentLoc.getColumn();
+        if (dx == 0 && dy == 0) {
+            return false;
+        } else {
+            if (dx > 0) {
+                // shift right
+            } else if (dx < 0) {
+                // shift left
+            }
+            if (dy > 0) {
+                // shift down
+            } else if (dy < 0) {
+                // shift up
+            }
+            return true;
         }
     }
     
