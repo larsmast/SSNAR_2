@@ -286,7 +286,7 @@ public class Simulator {
         private double estimateNoise;
         private double sensorNoise;
         private final Random noiseGenerator;
-        SlamMappingController mapping;
+        //SlamMappingController mapping;
         
         /**
          * Constructor
@@ -298,8 +298,8 @@ public class Simulator {
             myName = robot.getName();
             myID = robot.getId();
             noiseGenerator = new Random();
-            mapping = new SlamMappingController(myRobot, inbox);
-            mapping.setName("Local mapping controller");
+            //mapping = new SlamMappingController(myRobot, inbox);
+            //mapping.setName("Local mapping controller");
         }
         
         /**
