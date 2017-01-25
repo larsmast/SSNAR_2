@@ -20,15 +20,15 @@ public class SlamMappingController extends Thread {
     private Inbox inbox;
     private int[][] mapWindow;
     private boolean paused;
-    private LinkedBlockingQueue<int[]> measurementQueue;
-    private int[] currentMeasurement;
+    private LinkedBlockingQueue<int[]> updateQueue;
+    private int[] currentUpdate;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
         mapWindow = robot.getMapWindow();
-        measurementQueue = robot.getMeasurementQueue();
-        currentMeasurement = new int[20];
+        updateQueue = robot.getMeasurementQueue();
+        currentUpdate = new int[20];
     }
     
     @Override
@@ -67,8 +67,8 @@ public class SlamMappingController extends Thread {
                 continue;
             }
             
-            currentMeasurement = robot.getMeasurement();
-            if (currentMeasurement == null) {
+            currentUpdate = robot.getMeasurement();
+            if (currentUpdate == null) {
                 System.out.println("currentMeasurement = null");
                 continue;
             }
