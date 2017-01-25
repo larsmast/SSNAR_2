@@ -30,14 +30,16 @@ public class SlamMappingController extends Thread {
     private LinkedBlockingQueue<int[]> updateQueue;
     //private int[] currentUpdate;
     private SlamMeasurementHandler measurementHandler;
+    private MapLocation previousLocation;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
         mapWindow = robot.getMapWindow();
-        updateQueue = robot.getMeasurementQueue();
+        updateQueue = robot.getUpdateQueue();
         //currentUpdate = new int[20];
         measurementHandler = new SlamMeasurementHandler(robot);
+        previousLocation = this.robot.getInitialLocation();
     }
     
     @Override
@@ -81,14 +83,13 @@ public class SlamMappingController extends Thread {
             }
             
             Position robotPosition = measurementHandler.getRobotPosition();
-            Angle robotAngle = measurementHandler.getRobotHeading();
-            
-            /*/
-            // Find the location of the robot in the map */
-            // resize?
-            // Check if robot has moved in the map
-            // shift window
+            //Angle robotAngle = measurementHandler.getRobotHeading();
+
+            // Find the location of the robot in the map
             MapLocation robotLocation = findLocationInMap(robotPosition);
+            
+            // if changed: resize
+            
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
@@ -147,6 +148,7 @@ public class SlamMappingController extends Thread {
      * Updates the map.
      * (This method also updates the restricted and weakly
      * restricted area of the map if the occupied status of a cell changes.)
+     * 
      * @param location
      * @param measurement 
      */

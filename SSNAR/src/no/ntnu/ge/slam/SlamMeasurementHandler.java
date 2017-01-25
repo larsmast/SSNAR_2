@@ -45,7 +45,7 @@ class SlamMeasurementHandler {
     }
     
     boolean updateMeasurement() {
-        currentMeasurement = robot.getMeasurement();
+        currentMeasurement = robot.getUpdate();
         if (currentMeasurement == null) {
             return false;
         }
