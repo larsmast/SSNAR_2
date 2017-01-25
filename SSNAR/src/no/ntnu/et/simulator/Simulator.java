@@ -286,7 +286,7 @@ public class Simulator {
         private double estimateNoise;
         private double sensorNoise;
         private final Random noiseGenerator;
-        //SlamMappingController mapping;
+        SlamMappingController mapping;
         
         /**
          * Constructor
@@ -298,8 +298,6 @@ public class Simulator {
             myName = robot.getName();
             myID = robot.getId();
             noiseGenerator = new Random();
-            //mapping = new SlamMappingController(myRobot, inbox);
-            //mapping.setName("Local mapping controller");
         }
         
         /**
@@ -308,7 +306,10 @@ public class Simulator {
          */
         @Override
         public void run() {
-            //mapping.start();
+            mapping = new SlamMappingController(myRobot, inbox);
+            mapping.setName("SlamMappingController");
+            mapping.start();
+            
             int counter = 0;
             String content = myRobot.getHandShakeMessage();
             String dongleID = "[" + myID + "]:" + myName + ":";
