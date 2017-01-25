@@ -23,7 +23,8 @@ public class SlamRobot extends SimRobot {
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
-        mapWindow = initMapWindow(windowHeight, windowWidth);
+        mapWindow = new int[windowHeight][windowWidth];
+        //mapWindow = initMapWindow(windowHeight, windowWidth);
         measurementQueue = new LinkedBlockingQueue(5);
     }
     
