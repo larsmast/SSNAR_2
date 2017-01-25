@@ -67,6 +67,8 @@ public class SlamMappingController extends Thread {
                 continue;
             }
             
+            
+            
             /*
             currentUpdate = robot.getMeasurement();
             if (currentUpdate == null) {
@@ -75,6 +77,9 @@ public class SlamMappingController extends Thread {
             }
             System.out.println("currentMeasurement read");
             */
+            
+            // Check if robot has moved in the map
+            // shift window
             
         }
     }
