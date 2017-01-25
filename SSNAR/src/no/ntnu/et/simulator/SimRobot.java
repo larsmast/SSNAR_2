@@ -118,7 +118,7 @@ abstract public class SimRobot {
         return pose;
     }
     
-    Pose getInitialPose() {
+    public Pose getInitialPose() {
         return initialPose;
     }
     

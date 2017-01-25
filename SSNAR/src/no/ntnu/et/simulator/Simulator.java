@@ -308,7 +308,7 @@ public class Simulator {
          */
         @Override
         public void run() {
-            mapping.start();
+            //mapping.start();
             int counter = 0;
             String content = myRobot.getHandShakeMessage();
             String dongleID = "[" + myID + "]:" + myName + ":";
@@ -347,7 +347,7 @@ public class Simulator {
                     }
                     myRobot.measureIR(sensorNoise);
                     int[] update = myRobot.createMeasurement();
-                    myRobot.addMeasurement(update); // add measurement to measurementQueue
+                    //myRobot.addMeasurement(update); // add measurement to measurementQueue
                     String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);

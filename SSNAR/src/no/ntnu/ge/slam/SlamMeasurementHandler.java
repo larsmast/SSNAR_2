@@ -14,7 +14,10 @@ import no.ntnu.et.simulator.SlamRobot;
 
 /**
  * This class is used to find the location of a robot of type SlamRobot and its
- * IR-measurements in the map. Based on no.ntnu.et.mapping
+ * IR-measurements in the map. Gets measurements from the internal
+ * measurementQueue.
+ * 
+ * Based on no.ntnu.et.mapping
  * 
  * @author Geir Eikeland
  */
@@ -32,9 +35,9 @@ class SlamMeasurementHandler {
      * @param robot SlamRobot
      * @param initialPose Pose
      */
-    SlamMeasurementHandler(SlamRobot robot, Pose initialPose) {
-        this.initialPose = initialPose;
+    SlamMeasurementHandler(SlamRobot robot) {
         this.robot = robot;
+        initialPose = this.robot.getInitialPose();
         sensors = new Sensor[4];
         for (int i = 0; i < 4; i++) {
             sensors[i] = new Sensor();
@@ -53,7 +56,7 @@ class SlamMeasurementHandler {
         
         // Update sensor data
         int[] irData = {currentMeasurement[4],currentMeasurement[5],currentMeasurement[6],currentMeasurement[7]};
-        int[] irHeading = {currentMeasurement[3]};
+        int irHeading = currentMeasurement[3];
         for (int i = 0; i < 4; i++) {
             int measurementDistance = irData[i];
             if (measurementDistance == 0 || measurementDistance > sensorRange) {
@@ -62,7 +65,7 @@ class SlamMeasurementHandler {
             }else{
                 sensors[i].setMeasurement(true);
             }
-            Angle towerAngle  = new Angle((double)irHeading[i]);
+            Angle towerAngle  = new Angle((double)irHeading);
             Angle sensorAngle = Angle.sum(towerAngle, robotPose.getHeading());
             double xOffset = measurementDistance * Math.cos(Math.toRadians(sensorAngle.getValue()));
             double yOffset = measurementDistance * Math.sin(Math.toRadians(sensorAngle.getValue()));
@@ -70,5 +73,17 @@ class SlamMeasurementHandler {
             sensors[i].setPosition(measurementPosition);
         }
         return true;
+    }
+    
+    Position getRobotPosition(){
+        return robotPose.getPosition();
+    }
+    
+    Angle getRobotHeading(){
+        return robotPose.getHeading();
+    }
+        
+    Sensor[] getIRSensorData(){
+        return sensors;
     }
 }
