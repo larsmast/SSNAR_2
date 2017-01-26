@@ -120,6 +120,7 @@ public class WindowMap {
     public void addMeasurement(MapLocation location, boolean measurement) {
         int row = location.getRow();
         int col = location.getColumn();
+        System.out.println("Row: " + row + ", Col: " + col);
         try {
             if (measurement) {
                 map[row][col] = 1; //occupied
