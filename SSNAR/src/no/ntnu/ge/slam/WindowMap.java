@@ -22,10 +22,10 @@ public class WindowMap {
         this.height = height;
         this.width = width;
         map = new int[this.height][this.width];
-        initWindowMap();
+        init();
     }
     
-    private void initWindowMap() {
+    private void init() {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 map[i][j] = 2; // unexplored
@@ -42,7 +42,7 @@ public class WindowMap {
             if (dx > 0) {
                 // shift right
             } else if (dx < 0) {
-                // shift left
+                shiftRight();
             }
             if (dy > 0) {
                 // shift down
@@ -50,6 +50,17 @@ public class WindowMap {
                 // shift up
             }
             return true;
+        }
+    }
+    
+    private void shiftRight() {
+        synchronized (mapLock) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width - 1; j++) {
+                    map[i][j+1] = map[i][j];
+                }
+                map[i][0] = 2;
+            }
         }
     }
     
@@ -94,5 +105,13 @@ public class WindowMap {
             }
         }
         */
+    }
+    
+    public void print() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                
+            }
+        }
     }
 }
