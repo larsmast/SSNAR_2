@@ -96,7 +96,7 @@ public class WindowMap {
                 }
             }
             for (int k = 0; k < width; k++) {
-                map[height][k] = 2;
+                map[height-1][k] = 2;
             }
         }
     }

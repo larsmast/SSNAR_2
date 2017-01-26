@@ -141,5 +141,9 @@ public class SlamMappingController extends Thread {
         return new MapLocation(row, column);
     }
     
-    
+    /*
+    private MapLocation findLocationInWindowMap(Position position) {
+        
+    }
+    */
 }
