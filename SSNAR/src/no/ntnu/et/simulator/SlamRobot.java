@@ -27,7 +27,16 @@ public class SlamRobot extends SimRobot {
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         mapWindow = new int[windowHeight][windowWidth];
-        updateQueue = new LinkedBlockingQueue(5);
+        initMapWindow(mapWindow);
+        updateQueue = new LinkedBlockingQueue<>(5);
+    }
+    
+    private void initMapWindow(int[][] mapWindow) {
+        for (int i = 0; i < windowHeight; i++) {
+            for (int j = 0; j < windowWidth; j++) {
+                mapWindow[i][j] = 2; // unexplored
+            }
+        }
     }
     
     public int[][] getMapWindow() {

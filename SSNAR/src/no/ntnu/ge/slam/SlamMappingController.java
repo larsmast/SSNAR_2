@@ -28,7 +28,6 @@ public class SlamMappingController extends Thread {
     private int[][] mapWindow;
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
-    //private int[] currentUpdate;
     private SlamMeasurementHandler measurementHandler;
     private MapLocation previousLocation;
     
@@ -37,7 +36,6 @@ public class SlamMappingController extends Thread {
         this.inbox = inbox;
         mapWindow = robot.getMapWindow();
         updateQueue = robot.getUpdateQueue();
-        //currentUpdate = new int[20];
         measurementHandler = new SlamMeasurementHandler(robot);
         previousLocation = this.robot.getInitialLocation();
     }
