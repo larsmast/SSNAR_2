@@ -75,11 +75,17 @@ public class WindowMap {
     public void addMeasurement(MapLocation location, boolean measurement) {
         int row = location.getRow();
         int col = location.getColumn();
-        if (measurement) {
-            map[row][col] = 1; //occupied
-        } else {
-            map[row][col] = 0; // free
-        } // (unexplored = 2)
+        try {
+            if (measurement) {
+                map[row][col] = 1; //occupied
+            } else {
+                map[row][col] = 0; // free
+            } // (unexplored = 2)
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("ArrayIndexOutOfBoundsException in addMeasurement: " + e.getMessage());
+            System.err.println("Row: " + row + ", Col: " + col);
+        }
+        
 
         // If the cell changes from occupied to free or vice versa, the restricted
         // status of nearby cells are updated here:
