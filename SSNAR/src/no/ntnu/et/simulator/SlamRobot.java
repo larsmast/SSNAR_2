@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.map.MapLocation;
+import no.ntnu.ge.slam.WindowMap;
 
 /**
  *
@@ -20,29 +21,17 @@ import no.ntnu.et.map.MapLocation;
 public class SlamRobot extends SimRobot {
     private final int windowHeight = 100;
     private final int windowWidth = 100;
-    private int[][] mapWindow;
+    private WindowMap windowMap;
     private LinkedBlockingQueue<int[]> updateQueue;
-    private final Object mapLock = new Object();
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
-        mapWindow = new int[windowHeight][windowWidth];
-        initMapWindow(mapWindow);
+        windowMap = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
     }
     
-    private void initMapWindow(int[][] mapWindow) {
-        for (int i = 0; i < windowHeight; i++) {
-            for (int j = 0; j < windowWidth; j++) {
-                mapWindow[i][j] = 2; // unexplored
-            }
-        }
-    }
-    
-    public int[][] getMapWindow() {
-        synchronized (mapLock) {
-            return mapWindow;
-        }
+    public WindowMap getMapWindow() {
+        return windowMap;
     }
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
