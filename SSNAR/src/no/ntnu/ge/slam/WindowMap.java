@@ -40,14 +40,14 @@ public class WindowMap {
             return false;
         } else {
             if (dx > 0) {
-                // shift right
+                shiftLeft();
             } else if (dx < 0) {
                 shiftRight();
             }
             if (dy > 0) {
-                // shift down
+                shiftDown();
             } else if (dy < 0) {
-                // shift up
+                shiftUp();
             }
             return true;
         }
@@ -60,6 +60,43 @@ public class WindowMap {
                     map[i][j+1] = map[i][j];
                 }
                 map[i][0] = 2;
+            }
+        }
+    }
+    
+    private void shiftLeft() {
+        synchronized (mapLock) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width - 1; j++) {
+                    map[i][j] = map[i][j+1];
+                }
+                map[i][width-1] = 2;
+            }
+        }
+    }
+    
+    private void shiftUp() {
+        synchronized (mapLock) {
+            for (int i = 1; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    map[i][j] = map[i-1][j];
+                }
+            }
+            for (int k = 0; k < width; k++) {
+                map[0][k] = 2;
+            }
+        }
+    }
+    
+    private void shiftDown() {
+        synchronized (mapLock) {
+            for (int i = 0; i < height - 1; i++) {
+                for (int j = 0; j < width; j++) {
+                    map[i][j] = map[i+1][j];
+                }
+            }
+            for (int k = 0; k < width; k++) {
+                map[height][k] = 2;
             }
         }
     }
