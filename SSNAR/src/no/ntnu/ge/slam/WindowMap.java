@@ -33,6 +33,14 @@ public class WindowMap {
         }
     }
     
+    int getHeight() {
+        return this.height;
+    }
+    
+    int getWidth() {
+        return this.width;
+    }
+    
     public boolean shift(MapLocation currentLoc, MapLocation newLoc) {
         int dx = newLoc.getRow() - currentLoc.getRow();
         int dy = newLoc.getColumn() - currentLoc.getColumn();

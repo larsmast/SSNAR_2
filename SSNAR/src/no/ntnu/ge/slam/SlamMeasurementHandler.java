@@ -69,7 +69,9 @@ class SlamMeasurementHandler {
             Angle sensorAngle = Angle.sum(towerAngle, robotPose.getHeading());
             double xOffset = measurementDistance * Math.cos(Math.toRadians(sensorAngle.getValue()));
             double yOffset = measurementDistance * Math.sin(Math.toRadians(sensorAngle.getValue()));
-            Position measurementPosition = Position.sum(robotPose.getPosition(), new Position(xOffset, yOffset));
+            Position offsetPosition = new Position(xOffset, yOffset);
+            sensors[i].setOffsetPosition(offsetPosition);
+            Position measurementPosition = Position.sum(robotPose.getPosition(), offsetPosition);
             sensors[i].setPosition(measurementPosition);
         }
         return true;
