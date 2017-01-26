@@ -8,9 +8,7 @@ package no.ntnu.ge.slam;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
-import no.ntnu.et.general.Angle;
 import no.ntnu.et.general.Position;
-import no.ntnu.et.map.Cell;
 import no.ntnu.et.map.MapLocation;
 import static no.ntnu.et.mapping.MappingController.getLineBetweenPoints;
 import no.ntnu.et.mapping.Sensor;
@@ -25,7 +23,7 @@ public class SlamMappingController extends Thread {
     private final int cellSize = 2;
     private SlamRobot robot;
     private Inbox inbox;
-    private int[][] mapWindow;
+    private WindowMap map;
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
@@ -34,8 +32,8 @@ public class SlamMappingController extends Thread {
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
-        mapWindow = robot.getMapWindow();
-        updateQueue = robot.getUpdateQueue();
+        map = this.robot.getWindowMap();
+        updateQueue = this.robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(robot);
         previousLocation = this.robot.getInitialLocation();
     }
@@ -87,7 +85,7 @@ public class SlamMappingController extends Thread {
             MapLocation robotLocation = findLocationInMap(robotPosition);
             
             // Check if robot has moved, if so: shift window
-            shiftMapWindow(previousLocation, robotLocation);
+            map.shift(previousLocation, robotLocation);
             previousLocation = robotLocation;
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
@@ -97,38 +95,18 @@ public class SlamMappingController extends Thread {
                 //resize?
                 MapLocation measurementLocation = findLocationInMap(sensor.getPosition());
                 if(sensor.isMeasurement()){
-                    addMeasurement(measurementLocation, true);
+                    map.addMeasurement(measurementLocation, true);
                 }
                 
                 // Create a measurements indicating no obstacle in the sensors line of sight
                 ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robotLocation, measurementLocation);
                 for (MapLocation location : lineOfSight) {
-                    addMeasurement(location, false);
+                    map.addMeasurement(location, false);
                 }
             }
                     
             
             
-        }
-    }
-    
-    private boolean shiftMapWindow(MapLocation currentLoc, MapLocation newLoc) {
-        int dx = newLoc.getRow() - currentLoc.getRow();
-        int dy = newLoc.getColumn() - currentLoc.getColumn();
-        if (dx == 0 && dy == 0) {
-            return false;
-        } else {
-            if (dx > 0) {
-                // shift right
-            } else if (dx < 0) {
-                // shift left
-            }
-            if (dy > 0) {
-                // shift down
-            } else if (dy < 0) {
-                // shift up
-            }
-            return true;
         }
     }
     
@@ -163,46 +141,5 @@ public class SlamMappingController extends Thread {
         return new MapLocation(row, column);
     }
     
-    /**
-     * Updates the map.
-     * (This method also updates the restricted and weakly
-     * restricted area of the map if the occupied status of a cell changes.)
-     * 
-     * @param location
-     * @param measurement 
-     */
-    private void addMeasurement(MapLocation location, boolean measurement) {
-        int row = location.getRow();
-        int col = location.getColumn();
-        if (measurement) {
-            mapWindow[row][col] = 1; //occupied
-        } else {
-            mapWindow[row][col] = 0; // free
-        } // (unexplored = 2)
-
-        // If the cell changes from occupied to free or vice versa, the restricted
-        // status of nearby cells are updated here:
-        /*
-        if(measuredCell.stateChanged()){
-            ArrayList<MapLocation> restricted = createCircle(location, 15);
-            ArrayList<MapLocation> weaklyRestricted = createCircle(location, 25);
-            for(MapLocation location2: restricted){
-                if(measuredCell.isOccupied()){
-                    map.get(location2).addRestrictingCell(measuredCell);
-                }
-                else {
-                    map.get(location2).removeRestrictingCell(measuredCell);
-                }
-            }
-            for(MapLocation location2: weaklyRestricted){
-                if(measuredCell.isOccupied()){
-                    map.get(location2).addWeaklyRestrictingCell(measuredCell);
-                }
-                else {
-                    map.get(location2).removeWeaklyRestrictingCell(measuredCell);
-                }
-            }
-        }
-        */
-    }
+    
 }

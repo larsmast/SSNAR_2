@@ -30,7 +30,7 @@ public class SlamRobot extends SimRobot {
         updateQueue = new LinkedBlockingQueue<>(5);
     }
     
-    public WindowMap getMapWindow() {
+    public WindowMap getWindowMap() {
         return windowMap;
     }
     
