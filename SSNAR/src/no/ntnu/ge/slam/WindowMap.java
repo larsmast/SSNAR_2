@@ -41,24 +41,24 @@ public class WindowMap {
         return this.width;
     }
     
-    public void shift(MapLocation currentLoc, MapLocation newLoc) {
+    public boolean shift(MapLocation currentLoc, MapLocation newLoc) {
         int dx = newLoc.getRow() - currentLoc.getRow();
         int dy = newLoc.getColumn() - currentLoc.getColumn();
-        //if (dx == 0 && dy == 0) {
-        //    return false;
-        //} else {
-        if (dx > 0) {
-            shiftLeft();
-        } else if (dx < 0) {
-            shiftRight();
+        if (dx == 0 && dy == 0) {
+            return false;
+        } else {
+            if (dx > 0) {
+                shiftLeft();
+            } else if (dx < 0) {
+                shiftRight();
+            }
+            if (dy > 0) {
+                shiftDown();
+            } else if (dy < 0) {
+                shiftUp();
+            }
+            return true;
         }
-        if (dy > 0) {
-            shiftDown();
-        } else if (dy < 0) {
-            shiftUp();
-        }
-            //return true;
-        //}
     }
     
     private void shiftRight() {
