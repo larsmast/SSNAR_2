@@ -28,7 +28,6 @@ public class SlamMappingController extends Thread {
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
-    //private MapLocation previousLocation;
     private MapLocation origoLocation;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
@@ -36,8 +35,7 @@ public class SlamMappingController extends Thread {
         this.inbox = inbox;
         map = this.robot.getWindowMap();
         updateQueue = this.robot.getUpdateQueue();
-        measurementHandler = new SlamMeasurementHandler(robot);
-        //previousLocation = this.robot.getInitialLocation();
+        measurementHandler = new SlamMeasurementHandler(this.robot);
         origoLocation = this.robot.getInitialLocation();
         
     }
@@ -89,7 +87,10 @@ public class SlamMappingController extends Thread {
             MapLocation robotLocation = findLocationInMap(robotPosition);
             
             // Check if robot has moved, if so: shift window
-            map.shift(origoLocation, robotLocation);
+            if (robotHasMoved(origoLocation, robotLocation)) {
+                map.shift(origoLocation, robotLocation);
+            }
+            
             origoLocation = robotLocation;
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
@@ -172,6 +173,13 @@ public class SlamMappingController extends Thread {
         row += map.getHeight()/2 - 1;
         column += map.getWidth()/2 - 1;
         return new MapLocation(row, column);
+    }
+    
+    // fix: negavtive locations
+    private boolean robotHasMoved(MapLocation currentLoc, MapLocation newLoc) {
+        int dx = newLoc.getRow() - currentLoc.getRow();
+        int dy = newLoc.getColumn() - currentLoc.getColumn();
+        return (dx == 0 && dy == 0);
     }
     
 }
