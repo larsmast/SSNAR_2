@@ -29,7 +29,7 @@ public class WindowMap {
         synchronized (mapLock) {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                 map[i][j] = 2; // unexplored
+                    map[i][j] = 2; // unexplored
                 }
             }
         }
@@ -124,11 +124,13 @@ public class WindowMap {
         int col = location.getColumn();
         //System.out.println("Row: " + row + ", Col: " + col);
         try {
-            if (measurement) {
-                map[row][col] = 1; //occupied
-            } else {
-                map[row][col] = 0; // free
-            } // (unexplored = 2)
+            synchronized (mapLock) {
+                if (measurement) {
+                    map[row][col] = 1; //occupied
+                } else {
+                    map[row][col] = 0; // free
+                } // (unexplored = 2)
+            }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.err.println("ArrayIndexOutOfBoundsException in addMeasurement: " + e.getMessage());
             System.err.println("Row: " + row + ", Col: " + col);
