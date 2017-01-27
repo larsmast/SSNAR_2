@@ -94,6 +94,7 @@ public class SlamMappingController extends Thread {
                 origoLocation = robotLocation;
             }
             
+            
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
                 //boolean tooClose = false; - does not care about position of other robots
@@ -110,10 +111,10 @@ public class SlamMappingController extends Thread {
                 for (MapLocation location : lineOfSight) {
                     map.addMeasurement(location, false);
                 }
+            
             }
-                    
-            
-            
+        map.print();   
+
         }
     }
     

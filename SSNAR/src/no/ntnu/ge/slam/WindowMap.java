@@ -26,9 +26,11 @@ public class WindowMap {
     }
     
     private void init() {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                map[i][j] = 2; // unexplored
+        synchronized (mapLock) {
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                 map[i][j] = 2; // unexplored
+                }
             }
         }
     }
@@ -120,7 +122,7 @@ public class WindowMap {
     public void addMeasurement(MapLocation location, boolean measurement) {
         int row = location.getRow();
         int col = location.getColumn();
-        System.out.println("Row: " + row + ", Col: " + col);
+        //System.out.println("Row: " + row + ", Col: " + col);
         try {
             if (measurement) {
                 map[row][col] = 1; //occupied
@@ -160,10 +162,16 @@ public class WindowMap {
     }
     
     public void print() {
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                
+        for (int i = width-1; i >= 0; i--) {
+            for (int j = 0; j < height; j++) {
+                if (map[i][j] == 1) {
+                    System.out.print('X');
+                } else {
+                    System.out.print(map[i][j]);
+                }
             }
+            System.out.println();
         }
+        System.out.println("------------------------------------------");
     }
 }
