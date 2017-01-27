@@ -8,7 +8,6 @@ package no.ntnu.ge.slam;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
-import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.map.MapLocation;
 import static no.ntnu.et.mapping.MappingController.getLineBetweenPoints;
@@ -36,7 +35,7 @@ public class SlamMappingController extends Thread {
         map = this.robot.getWindowMap();
         updateQueue = this.robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(this.robot);
-        origoLocation = this.robot.getInitialLocation();
+        origoLocation = null;
         
     }
     
@@ -85,13 +84,15 @@ public class SlamMappingController extends Thread {
 
             // Find the location of the robot in the world map
             MapLocation robotLocation = findLocationInMap(robotPosition);
+            if (origoLocation == null) {
+                origoLocation = robotLocation;
+            }
             
             // Check if robot has moved, if so: shift window
             if (robotHasMoved(origoLocation, robotLocation)) {
                 map.shift(origoLocation, robotLocation);
+                origoLocation = robotLocation;
             }
-            
-            origoLocation = robotLocation;
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
@@ -179,7 +180,7 @@ public class SlamMappingController extends Thread {
     private boolean robotHasMoved(MapLocation currentLoc, MapLocation newLoc) {
         int dx = newLoc.getRow() - currentLoc.getRow();
         int dy = newLoc.getColumn() - currentLoc.getColumn();
-        return (dx == 0 && dy == 0);
+        return !(dx == 0 && dy == 0);
     }
     
 }
