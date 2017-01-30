@@ -94,6 +94,24 @@ public class SlamMappingController extends Thread {
                 origoLocation = robotLocation;
             }
             
+            //TEST
+            /*
+            MapLocation measLoc1 = new MapLocation(49,0);
+            MapLocation measLoc2 = new MapLocation(49,99);
+            MapLocation measLoc3 = new MapLocation(0,49);
+            MapLocation measLoc4 = new MapLocation(99,49);
+            map.addMeasurement(measLoc1, true);
+            map.addMeasurement(measLoc2, true);
+            map.addMeasurement(measLoc3, true);
+            map.addMeasurement(measLoc4, true);
+            //ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(new MapLocation(40,0), measLoc);
+            //for (MapLocation location : lineOfSight) {
+            //    map.addMeasurement(location, false);
+            //}
+            map.shift(new MapLocation(49,49), new MapLocation(50,49));
+            map.print();
+            //TEST
+            */
             
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
@@ -107,13 +125,13 @@ public class SlamMappingController extends Thread {
                 
                 // Create a measurements indicating no obstacle in the sensors line of sight
                 //ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robotLocation, measurementLocation);
-                ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(new MapLocation(0,0), measurementLocation);
+                ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(new MapLocation(49,49), measurementLocation);
                 for (MapLocation location : lineOfSight) {
                     map.addMeasurement(location, false);
                 }
-            
+            map.print();
             }
-        map.print();   
+        //map.print();   
 
         }
     }

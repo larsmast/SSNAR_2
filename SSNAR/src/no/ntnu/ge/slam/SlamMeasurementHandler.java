@@ -11,6 +11,7 @@ import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.mapping.Sensor;
 import no.ntnu.et.simulator.SlamRobot;
+import no.ntnu.tem.robot.IR;
 
 /**
  * This class is used to find the location of a robot of type SlamRobot and its
@@ -56,7 +57,7 @@ class SlamMeasurementHandler {
         
         // Update sensor data
         int[] irData = {currentMeasurement[4],currentMeasurement[5],currentMeasurement[6],currentMeasurement[7]};
-        int irHeading = currentMeasurement[3];
+        int[] irHeading = getIrHeading(irData, currentMeasurement[3]);
         for (int i = 0; i < 4; i++) {
             int measurementDistance = irData[i];
             if (measurementDistance == 0 || measurementDistance > sensorRange) {
@@ -65,7 +66,7 @@ class SlamMeasurementHandler {
             }else{
                 sensors[i].setMeasurement(true);
             }
-            Angle towerAngle  = new Angle((double)irHeading);
+            Angle towerAngle  = new Angle((double)irHeading[i]);
             Angle sensorAngle = Angle.sum(towerAngle, robotPose.getHeading());
             double xOffset = measurementDistance * Math.cos(Math.toRadians(sensorAngle.getValue()));
             double yOffset = measurementDistance * Math.sin(Math.toRadians(sensorAngle.getValue()));
@@ -87,5 +88,15 @@ class SlamMeasurementHandler {
         
     Sensor[] getIRSensorData(){
         return sensors;
+    }
+    
+    private int[] getIrHeading(int[] irData, int towerHeading) {
+        int[] irHeading = new int[irData.length];
+        int[] sensors = {0, 90, 180, 270};
+        IR irSensors = new IR(sensors);
+        for (int i = 0; i < irData.length; i++) {
+            irHeading[i] = (towerHeading + irSensors.getSpreading()[i]) % 360;
+        }
+        return irHeading;
     }
 }

@@ -44,8 +44,8 @@ public class WindowMap {
     }
     
     public boolean shift(MapLocation currentLoc, MapLocation newLoc) {
-        int dx = newLoc.getRow() - currentLoc.getRow();
-        int dy = newLoc.getColumn() - currentLoc.getColumn();
+        int dx = newLoc.getColumn() - currentLoc.getColumn();
+        int dy = newLoc.getRow() - currentLoc.getRow();
         if (dx == 0 && dy == 0) {
             return false;
         } else {
@@ -164,8 +164,8 @@ public class WindowMap {
     }
     
     public void print() {
-        for (int i = width-1; i >= 0; i--) {
-            for (int j = 0; j < height; j++) {
+        for (int i = height-1; i >= 0; i--) {
+            for (int j = 0; j < width; j++) {
                 if (map[i][j] == 1) {
                     System.out.print('X');
                 } else {
