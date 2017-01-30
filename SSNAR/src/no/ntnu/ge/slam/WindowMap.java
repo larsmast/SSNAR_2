@@ -9,7 +9,10 @@ package no.ntnu.ge.slam;
 import no.ntnu.et.map.MapLocation;
 
 /**
- *
+ * Class for representing a 2D array representing the moving window map used
+ * for navigation in a SlamRobot. Write and read operations to the array are
+ * protected by synchronization on mapLock. It is therefor thread safe.
+ * 
  * @author geirhei
  */
 public class WindowMap {
@@ -18,6 +21,12 @@ public class WindowMap {
     private final int width;
     private final Object mapLock = new Object();
     
+    /**
+     * Constructor
+     * 
+     * @param height
+     * @param width 
+     */
     public WindowMap(int height, int width) {
         this.height = height;
         this.width = width;
@@ -35,14 +44,33 @@ public class WindowMap {
         }
     }
     
+    /**
+     * Getter for height.
+     * 
+     * @return height of the map
+     */
     int getHeight() {
         return this.height;
     }
     
+    /**
+     * Getter for width.
+     * 
+     * @return width of the map
+     */
     int getWidth() {
         return this.width;
     }
     
+    /**
+     * Compares two map locations, determines if the data in the map needs to
+     * be shifted because of movement, and calls the correct shift operation
+     * on the array.
+     * 
+     * @param currentLoc
+     * @param newLoc
+     * @return true if a shift occured
+     */
     public boolean shift(MapLocation currentLoc, MapLocation newLoc) {
         int dx = newLoc.getColumn() - currentLoc.getColumn();
         int dy = newLoc.getRow() - currentLoc.getRow();
@@ -67,6 +95,9 @@ public class WindowMap {
         }
     }
     
+    /**
+     * Shifts the content of the map to the right.
+     */
     private void shiftRight() {
         synchronized (mapLock) {
             for (int i = 0; i < height; i++) {
@@ -171,6 +202,9 @@ public class WindowMap {
         */
     }
     
+    /**
+     * Print method for debugging.
+     */
     public void print() {
         for (int i = height-1; i >= 0; i--) {
             for (int j = 0; j < width; j++) {
