@@ -222,6 +222,7 @@ public class WindowMap {
                 } else {
                     System.out.print(map[i][j]);
                 }
+                System.out.print(" ");
             }
             System.out.println();
         }

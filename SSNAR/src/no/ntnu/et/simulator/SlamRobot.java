@@ -23,11 +23,16 @@ public class SlamRobot extends SimRobot {
     private final int windowWidth = 100;
     private WindowMap windowMap;
     private LinkedBlockingQueue<int[]> updateQueue;
+    private Position[] waypoints;
+    private int numberOfWaypoints;
+    private Position lastWaypoint;
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         windowMap = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
+        waypoints = new Position[10];
+        numberOfWaypoints = 0;
     }
     
     public WindowMap getWindowMap() {
@@ -36,6 +41,10 @@ public class SlamRobot extends SimRobot {
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
         return updateQueue;
+    }
+    
+    public Position getNextWaypoint() {
+        return waypoints[numberOfWaypoints-1];
     }
     
     /**
