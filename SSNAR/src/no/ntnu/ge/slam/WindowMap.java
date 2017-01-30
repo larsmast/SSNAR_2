@@ -6,6 +6,7 @@
  */
 package no.ntnu.ge.slam;
 
+import static java.lang.Math.abs;
 import no.ntnu.et.map.MapLocation;
 
 /**
@@ -78,17 +79,25 @@ public class WindowMap {
             return false;
         } else {
             if (dx > 0) {
-                shiftLeft();
+                for (int i = 0; i < dx; i++) {
+                    shiftLeft();
+                }
                 //System.out.println("Shift left: " + dx);
             } else if (dx < 0) {
-                shiftRight();
+                for (int j = 0; j < abs(dx); j++) {
+                    shiftRight();
+                }
                 //System.out.println("Shift right: " + dx);
             }
             if (dy > 0) {
-                shiftDown();
+                for (int k = 0; k < dy; k++) {
+                    shiftDown();
+                }
                 //System.out.println("Shift down: " + dy);
             } else if (dy < 0) {
-                shiftUp();
+                for (int l = 0; l < abs(dy); l++) {
+                    shiftUp();
+                }
                 //System.out.println("Shift up: " + dy);
             }
             return true;
@@ -101,8 +110,8 @@ public class WindowMap {
     private void shiftRight() {
         synchronized (mapLock) {
             for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width - 1; j++) {
-                    map[i][j+1] = map[i][j];
+                for (int j = width-1; j > 0; j--) {
+                    map[i][j] = map[i][j-1];
                 }
             }
             for (int k = 0; k < height; k++) {
@@ -139,9 +148,9 @@ public class WindowMap {
     
     private void shiftDown() {
         synchronized (mapLock) {
-            for (int i = 1; i < height; i++) {
+            for (int i = 0; i < height-1; i++) {
                 for (int j = 0; j < width; j++) {
-                    map[i-1][j] = map[i][j];
+                    map[i][j] = map[i+1][j];
                 }
             }
             for (int k = 0; k < width; k++) {
