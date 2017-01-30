@@ -87,7 +87,7 @@ public class WindowMap {
     
     private void shiftUp() {
         synchronized (mapLock) {
-            for (int i = 1; i < height; i++) {
+            for (int i = height-1; i > 0; i--) {
                 for (int j = 0; j < width; j++) {
                     map[i][j] = map[i-1][j];
                 }
@@ -100,9 +100,9 @@ public class WindowMap {
     
     private void shiftDown() {
         synchronized (mapLock) {
-            for (int i = 0; i < height - 1; i++) {
+            for (int i = 1; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    map[i][j] = map[i+1][j];
+                    map[i-1][j] = map[i][j];
                 }
             }
             for (int k = 0; k < width; k++) {

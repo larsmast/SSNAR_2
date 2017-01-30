@@ -90,7 +90,7 @@ public class SlamMappingController extends Thread {
             
             // Check if robot has moved, if so: shift window
             if (robotHasMoved(origoLocation, robotLocation)) {
-                //map.shift(origoLocation, robotLocation);
+                map.shift(origoLocation, robotLocation);
                 origoLocation = robotLocation;
             }
             
