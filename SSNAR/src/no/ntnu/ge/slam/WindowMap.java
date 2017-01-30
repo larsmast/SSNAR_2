@@ -51,13 +51,17 @@ public class WindowMap {
         } else {
             if (dx > 0) {
                 shiftLeft();
+                //System.out.println("Shift left: " + dx);
             } else if (dx < 0) {
                 shiftRight();
+                //System.out.println("Shift right: " + dx);
             }
             if (dy > 0) {
                 shiftDown();
+                //System.out.println("Shift down: " + dy);
             } else if (dy < 0) {
                 shiftUp();
+                //System.out.println("Shift up: " + dy);
             }
             return true;
         }
@@ -69,7 +73,9 @@ public class WindowMap {
                 for (int j = 0; j < width - 1; j++) {
                     map[i][j+1] = map[i][j];
                 }
-                map[i][0] = 2;
+            }
+            for (int k = 0; k < height; k++) {
+                map[k][0] = 2;
             }
         }
     }
@@ -80,7 +86,9 @@ public class WindowMap {
                 for (int j = 0; j < width - 1; j++) {
                     map[i][j] = map[i][j+1];
                 }
-                map[i][width-1] = 2;
+            }
+            for (int k = 0; k < height; k++) {
+                map[k][width-1] = 2;
             }
         }
     }

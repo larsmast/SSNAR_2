@@ -129,9 +129,9 @@ public class SlamMappingController extends Thread {
                 for (MapLocation location : lineOfSight) {
                     map.addMeasurement(location, false);
                 }
-            map.print();
+            //map.print();
             }
-        //map.print();   
+        map.print();   
 
         }
     }
