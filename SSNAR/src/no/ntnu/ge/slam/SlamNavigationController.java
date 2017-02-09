@@ -36,12 +36,11 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            //command = findCommandToTarget(0, 0);
-            if (!robot.isBusy()) {
-                command = findCommandToTarget(90, 10);
+            if (!robot.isBusy() && !robot.isInCollisionManagement()) {
+                robot.setTarget(90, 100);
+                robot.setBusy(true);
             }
-            robot.setTarget(90, 10);
-            robot.setBusy(true);
+            
         }
     }
     

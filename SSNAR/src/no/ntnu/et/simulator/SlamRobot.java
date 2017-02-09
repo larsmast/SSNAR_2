@@ -28,6 +28,7 @@ public class SlamRobot extends SimRobot {
     private Position lastWaypoint;
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
+    private boolean inWallCollision = false;
     
     MapLocation[] localFrontierLocations;
     MapLocation[] remoteFrontierLocations;
@@ -57,6 +58,18 @@ public class SlamRobot extends SimRobot {
     
     public Position getNextWaypoint() {
         return waypoints[numberOfWaypoints-1];
+    }
+    
+    public boolean getInWallCollision() {
+        return inWallCollision;
+    }
+    
+    public void setInWallCollision(boolean bool){
+        inWallCollision = bool;
+    }
+    
+    public boolean isInCollisionManagement() {
+        return inWallCollision; // Maybe add robotCollision here if implemented
     }
     
     /**
