@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Random;
 import javax.swing.JFrame;
 import no.ntnu.ge.slam.SlamMappingController;
+import no.ntnu.ge.slam.SlamNavigationController;
 import no.ntnu.tem.communication.Inbox;
 
 /**
@@ -287,6 +288,7 @@ public class Simulator {
         private double sensorNoise;
         private final Random noiseGenerator;
         SlamMappingController mapping;
+        SlamNavigationController navigation;
         
         /**
          * Constructor
@@ -309,6 +311,9 @@ public class Simulator {
             mapping = new SlamMappingController(myRobot, inbox);
             mapping.setName("SlamMappingController");
             mapping.start();
+            navigation = new SlamNavigationController(myRobot);
+            navigation.setName("SlamNavigationController");
+            navigation.start();
             
             int counter = 0;
             String content = myRobot.getHandShakeMessage();
@@ -336,6 +341,7 @@ public class Simulator {
                     String updateMsg = "{S,IDL}\n";
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
+                    myRobot.setBusy(false);
                 }
                 myRobot.turnTower();
                 

@@ -136,6 +136,10 @@ public class NavigationController extends Thread{
             
             for(int i = 0; i < robotNames.size(); i++){
                 String name = robotNames.get(i);
+                // This disables control commands to the SlamRobot
+                if (name.equals("SlamRobot")) {
+                    continue;
+                }
                 Robot applicationRobot = robotController.getRobot(name);
                 int id = applicationRobot.getId();
                 if(navigationRobots.get(name).hasNewPriorityCommand()){

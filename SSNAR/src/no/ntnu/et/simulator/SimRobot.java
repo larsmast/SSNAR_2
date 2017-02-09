@@ -94,7 +94,7 @@ abstract public class SimRobot {
      * @param theta
      * @param distance 
      */
-    void setTarget(double theta, double distance) {
+    public void setTarget(double theta, double distance) {
         synchronized(movementLock) {
             targetRotation = theta;
             targetDistance = distance;

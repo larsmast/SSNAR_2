@@ -88,4 +88,26 @@ public class SlamRobot extends SimRobot {
         Position initialPosition = initialPose.getPosition();
         return new MapLocation((int)initialPosition.getXValue(), (int)initialPosition.getYValue());
     }
+    
+    /**
+     * Method that returns the robots busyflag
+     *
+     * @return true if the robot is busy
+     */
+    public boolean isBusy() {
+        synchronized (busyLock) {
+            return busyFlag;
+        }
+    }
+
+    /**
+     * Method that sets the robots status to busy
+     *
+     * @param busyFlag true if robot is busy
+     */
+    public void setBusy(boolean busyFlag) {
+        synchronized (busyLock) {
+            this.busyFlag = busyFlag;
+        }
+    }
 }

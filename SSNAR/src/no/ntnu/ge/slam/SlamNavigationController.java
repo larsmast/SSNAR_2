@@ -6,15 +6,19 @@
  */
 package no.ntnu.ge.slam;
 
+import no.ntnu.et.simulator.SlamRobot;
+
 /**
  *
  * @author geirhei
  */
 public class SlamNavigationController extends Thread {
     private boolean paused = false;
+    SlamRobot robot;
     int[] command;
     
-    public SlamNavigationController() {
+    public SlamNavigationController(SlamRobot robot) {
+        this.robot = robot;
         command = new int[] {0, 0};
     }
     
@@ -32,7 +36,12 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            command = findCommandToTarget(0, 0);
+            //command = findCommandToTarget(0, 0);
+            if (!robot.isBusy()) {
+                command = findCommandToTarget(90, 10);
+            }
+            robot.setTarget(90, 10);
+            robot.setBusy(true);
         }
     }
     
