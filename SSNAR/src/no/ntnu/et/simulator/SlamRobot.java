@@ -26,6 +26,13 @@ public class SlamRobot extends SimRobot {
     private Position[] waypoints;
     private int numberOfWaypoints;
     private Position lastWaypoint;
+    private boolean busyFlag = false;
+    private final Object busyLock = new Object();
+    
+    MapLocation[] localFrontierLocations;
+    MapLocation[] remoteFrontierLocations;
+    MapLocation[] localOccupiedLocations;
+    MapLocation[] remoteOccupiedLocations;
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
@@ -33,6 +40,11 @@ public class SlamRobot extends SimRobot {
         updateQueue = new LinkedBlockingQueue<>(5);
         waypoints = new Position[10];
         numberOfWaypoints = 0;
+        
+        localFrontierLocations = new MapLocation[600];
+        remoteFrontierLocations = new MapLocation[600];
+        localOccupiedLocations = new MapLocation[600];
+        remoteOccupiedLocations = new MapLocation[600];
     }
     
     public WindowMap getWindowMap() {

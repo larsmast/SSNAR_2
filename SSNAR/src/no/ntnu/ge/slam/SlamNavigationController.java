@@ -12,13 +12,18 @@ package no.ntnu.ge.slam;
  */
 public class SlamNavigationController extends Thread {
     private boolean paused = false;
+    int[] command;
+    
+    public SlamNavigationController() {
+        command = new int[] {0, 0};
+    }
     
     @Override
     public void run() {
         setName("Slam navigation controller");
         while (true) {
             try {
-                Thread.sleep(10);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
@@ -27,10 +32,12 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            
+            command = findCommandToTarget(0, 0);
         }
-        
-        
-        
+    }
+    
+    private int[] findCommandToTarget(int rotation, int distance) {
+        int[] cmd = {rotation, distance};
+        return cmd;
     }
 }
