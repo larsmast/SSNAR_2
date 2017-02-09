@@ -1,5 +1,5 @@
-nbproject/private/*
-build/
+SSNAR/nbproject/private/*
+SSNAR/build/
 nbbuild/
 dist/
 nbdist/

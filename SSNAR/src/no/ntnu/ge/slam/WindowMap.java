@@ -21,6 +21,8 @@ public class WindowMap {
     private final int height;
     private final int width;
     private final Object mapLock = new Object();
+    private MapLocation[] frontierLocations;
+    private MapLocation[] occupiedLocations;
     
     /**
      * Constructor
@@ -33,6 +35,8 @@ public class WindowMap {
         this.width = width;
         map = new int[this.height][this.width];
         init();
+        frontierLocations = new MapLocation[500];
+        occupiedLocations = new MapLocation[500];
     }
     
     private void init() {
