@@ -22,6 +22,8 @@ public class SlamRobot extends SimRobot {
     private final int windowHeight = 100;
     private final int windowWidth = 100;
     private WindowMap windowMap;
+    private WindowMap localWindow;
+    private WindowMap remoteWindow;
     private LinkedBlockingQueue<int[]> updateQueue;
     private Position[] waypoints;
     private int numberOfWaypoints;
@@ -30,26 +32,40 @@ public class SlamRobot extends SimRobot {
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
     
+    /*
     MapLocation[] localFrontierLocations;
     MapLocation[] remoteFrontierLocations;
     MapLocation[] localOccupiedLocations;
     MapLocation[] remoteOccupiedLocations;
+    */
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         windowMap = new WindowMap(windowHeight, windowWidth);
+        localWindow = new WindowMap(windowHeight, windowWidth);
+        remoteWindow = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
         waypoints = new Position[10];
         numberOfWaypoints = 0;
         
+        /*
         localFrontierLocations = new MapLocation[600];
         remoteFrontierLocations = new MapLocation[600];
         localOccupiedLocations = new MapLocation[600];
         remoteOccupiedLocations = new MapLocation[600];
+        */
     }
     
     public WindowMap getWindowMap() {
         return windowMap;
+    }
+    
+    public WindowMap getLocalWindow() {
+        return localWindow;
+    }
+    
+    public WindowMap getRemoteWindow() {
+        return remoteWindow;
     }
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {

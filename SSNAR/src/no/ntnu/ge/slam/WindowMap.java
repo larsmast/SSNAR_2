@@ -21,8 +21,12 @@ public class WindowMap {
     private final int height;
     private final int width;
     private final Object mapLock = new Object();
+    private int globalStartRow = 0;
+    private int globalStartColumn = 0;
+    /*
     private MapLocation[] frontierLocations;
     private MapLocation[] occupiedLocations;
+    */
     
     /**
      * Constructor
@@ -35,8 +39,10 @@ public class WindowMap {
         this.width = width;
         map = new int[this.height][this.width];
         init();
+        /*
         frontierLocations = new MapLocation[500];
         occupiedLocations = new MapLocation[500];
+        */
     }
     
     private void init() {
@@ -47,6 +53,26 @@ public class WindowMap {
                 }
             }
         }
+    }
+    
+    int getGlobalStartRow() {
+        return globalStartRow;
+    }
+    
+    int getGlobalStartColumn() {
+        return globalStartColumn;
+    }
+    
+    void setGlobalStartRow(int row) {
+        globalStartRow = row;
+    }
+    
+    void setGlobalStartColumn(int column) {
+        globalStartColumn = column;
+    }
+    
+    int[][] getWindow() {
+        return map;
     }
     
     /**

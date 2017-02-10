@@ -24,6 +24,8 @@ public class SlamMappingController extends Thread {
     private SlamRobot robot;
     private Inbox inbox;
     private WindowMap map;
+    private WindowMap localWindow;
+    private WindowMap remoteWindow;
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
@@ -33,6 +35,8 @@ public class SlamMappingController extends Thread {
         this.robot = robot;
         this.inbox = inbox;
         map = this.robot.getWindowMap();
+        localWindow = this.robot.getLocalWindow();
+        remoteWindow = this.robot.getRemoteWindow();
         updateQueue = this.robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(this.robot);
         origoLocation = null;
@@ -64,6 +68,10 @@ public class SlamMappingController extends Thread {
     
     @Override
     public void run() {
+        fillTestRemoteWindow(); // For testing with simple occupied row in window
+        remoteWindow.setGlobalStartRow(remoteWindow.getHeight());
+        remoteWindow.setGlobalStartColumn(0); // already set
+        
         while (true) {
             try {
                 Thread.sleep(10);
@@ -131,7 +139,7 @@ public class SlamMappingController extends Thread {
                 }
             //map.print();
             }
-        map.print();   
+        //map.print();   
 
         }
     }
@@ -200,6 +208,18 @@ public class SlamMappingController extends Thread {
         int dx = newLoc.getRow() - currentLoc.getRow();
         int dy = newLoc.getColumn() - currentLoc.getColumn();
         return !(dx == 0 && dy == 0);
+    }
+    
+    private void fillTestRemoteWindow() {
+        int[][] window = remoteWindow.getWindow();
+        for (int i = 0; i < remoteWindow.getHeight(); i++) {
+            for (int j = 0; j < remoteWindow.getWidth(); j++) {
+                window[i][j] = 2;
+            }
+        }
+        for (int k = 0; k < remoteWindow.getWidth(); k++) {
+            window[75][k] = 1;
+        }
     }
     
 }
