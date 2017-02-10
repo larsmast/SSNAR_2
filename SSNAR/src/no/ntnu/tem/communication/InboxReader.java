@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import no.ntnu.tem.application.RobotController;
+//Added Henrik Logfunction
+import java.io.PrintWriter;
 
 /**
  * This class retrieves the messages from the inbox and interprets them using
@@ -175,6 +177,19 @@ public class InboxReader extends Thread implements Language {
                         }
                         doStatusUpdate(name, status);
                         break;
+                    // Added Henrik Logfunction
+                    case DEBUG:
+                        if (debug) {
+                            System.out.println("CASE: DEBUG");
+                        }
+                        try{
+                            PrintWriter writer = new PrintWriter("LOG.txt", "UTF-8");
+                            writer.println(content);
+                            writer.close();
+                            System.out.println(content);
+                        } catch (Exception e) {}
+                        System.out.println(content);
+                        break;                        
                 }
 
             }

@@ -125,7 +125,19 @@ public class Communication {
         serialcom.send(MessageHandler.wrapSwitchToRobot(robotID)); //*switch robotID
         serialcom.send(MessageHandler.wrapRobotOrder(orientation, distance));
     }
-
+    
+    public void sendStartDebugToRobot(int robotID) {
+        switchToCommandMode();
+        serialcom.send(MessageHandler.wrapSwitchToRobot(robotID)); //*switch robotID
+        serialcom.send("{" + "D" + "," + "STA" + "}");
+    }
+    
+    public void sendStopDebugToRobot(int robotID) {
+        switchToCommandMode();
+        serialcom.send(MessageHandler.wrapSwitchToRobot(robotID)); //*switch robotID
+        serialcom.send("{" + "D" + "," + "STO" + "}");
+    }
+    
     /**
      * Method that confirms that the server has received the handshake
      *

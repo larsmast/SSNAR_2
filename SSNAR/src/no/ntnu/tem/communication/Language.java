@@ -48,7 +48,10 @@ public interface Language {
     public final static String STATUS_IDLE = "IDL";
     public final static String STATUS_BUSY = "BUSY";
     public final static String STATUS_HIT = "HIT";
-
+    
+    //// DEBUG
+    public final static String DEBUG = "D";
+    
     //// VALUES
     public final static int IR_MAX_VALUE = 90;
     public final static int IR_MIN_VALUE = 0;
