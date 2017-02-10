@@ -189,7 +189,13 @@ public class InboxReader extends Thread implements Language {
                             System.out.println(content);
                         } catch (Exception e) {}
                         System.out.println(content);
-                        break;                        
+                        break;
+                        
+                    case MAP:
+                        if (debug) {
+                            System.out.println("CASE: MAP");
+                        }
+                        break;
                 }
 
             }

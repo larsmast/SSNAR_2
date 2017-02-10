@@ -52,6 +52,9 @@ public interface Language {
     //// DEBUG
     public final static String DEBUG = "D";
     
+    //// MAP
+    public final static String MAP = "M";
+    
     //// VALUES
     public final static int IR_MAX_VALUE = 90;
     public final static int IR_MIN_VALUE = 0;
