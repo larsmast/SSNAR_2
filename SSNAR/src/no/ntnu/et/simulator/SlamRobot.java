@@ -42,7 +42,7 @@ public class SlamRobot extends SimRobot {
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         windowMap = new WindowMap(windowHeight, windowWidth);
-        localWindow = new WindowMap(windowHeight, windowWidth);
+        localWindow = new WindowMap(200, 100); // test values
         remoteWindow = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
         waypoints = new Position[10];

@@ -36,6 +36,27 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
+            // while (!origo of remoteWindow reached)
+            
+                // if (wall reached)
+                    // status = not busy
+                    //turn in some direction
+                    // shift localWindow to current location
+                    // get remoteWindow for the next direction
+
+                // else if (fully explored ahead)
+                    // status = not busy
+                    // turn in some direction
+                    // shift localWindow to current location
+                    // get remoteWindow for the next direction
+
+                // else if (unexplored fields ahead, middle of remoteWindow reached)
+                    // status = busy
+                    // don't change direction
+                    // localWindow = remoteWindow
+                    // get remoteWindow for area ahead
+                
+            
             if (!robot.isBusy() && !robot.isInCollisionManagement()) {
                 robot.setTarget(90, 100);
                 robot.setBusy(true);

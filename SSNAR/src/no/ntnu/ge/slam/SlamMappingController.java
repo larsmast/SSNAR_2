@@ -8,8 +8,12 @@ package no.ntnu.ge.slam;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+import no.ntnu.et.general.Angle;
+import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.map.MapLocation;
+import static no.ntnu.et.map.MapLocation.getOctant;
+import static no.ntnu.et.map.MapLocation.sum;
 import static no.ntnu.et.mapping.MappingController.getLineBetweenPoints;
 import no.ntnu.et.mapping.Sensor;
 import no.ntnu.et.simulator.SlamRobot;
@@ -30,16 +34,18 @@ public class SlamMappingController extends Thread {
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
     private MapLocation origoLocation;
+    //private boolean robotBusy;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
-        map = this.robot.getWindowMap();
-        localWindow = this.robot.getLocalWindow();
-        remoteWindow = this.robot.getRemoteWindow();
-        updateQueue = this.robot.getUpdateQueue();
-        measurementHandler = new SlamMeasurementHandler(this.robot);
+        map = robot.getWindowMap();
+        localWindow = robot.getLocalWindow();
+        remoteWindow = robot.getRemoteWindow();
+        updateQueue = robot.getUpdateQueue();
+        measurementHandler = new SlamMeasurementHandler(robot);
         origoLocation = null;
+        //robotBusy = robot.isBusy();
         
     }
     
@@ -88,7 +94,8 @@ public class SlamMappingController extends Thread {
             }
             
             Position robotPosition = measurementHandler.getRobotPosition();
-            //Angle robotAngle = measurementHandler.getRobotHeading();
+            Angle robotAngle = measurementHandler.getRobotHeading();
+            Pose robotPose = new Pose(robotPosition, robotAngle);
 
             // Find the location of the robot in the world map
             MapLocation robotLocation = findLocationInMap(robotPosition);
@@ -96,9 +103,8 @@ public class SlamMappingController extends Thread {
                 origoLocation = robotLocation;
             }
             
-            // Check if robot has moved, if so: shift window
-            if (robotHasMoved(origoLocation, robotLocation)) {
-                map.shift(origoLocation, robotLocation);
+            // Check if robot is busy, if not set origoLocation to current location
+            if (!robot.isBusy()) {
                 origoLocation = robotLocation;
             }
             
@@ -125,9 +131,9 @@ public class SlamMappingController extends Thread {
             for (Sensor sensor : sensors) {
                 //boolean tooClose = false; - does not care about position of other robots
                 
-                //resize?
+                MapLocation windowLocation = findLocationInWindow(robotPose);
                 MapLocation measurementLocation = findLocationInWindowMap(sensor.getOffsetPosition());
-                if(sensor.isMeasurement()){
+                if (sensor.isMeasurement()) {
                     map.addMeasurement(measurementLocation, true);
                 }
                 
@@ -201,6 +207,53 @@ public class SlamMappingController extends Thread {
         row += map.getHeight()/2 - 1;
         column += map.getWidth()/2 - 1;
         return new MapLocation(row, column);
+    }
+    
+    
+    private MapLocation findLocationInWindow(Pose pose) {
+        Position globalPosition = pose.getPosition();
+        MapLocation globalMapLocation = findLocationInMap(globalPosition);
+        int dx = globalMapLocation.getColumn() - origoLocation.getColumn();
+        int dy = globalMapLocation.getRow() - origoLocation.getRow();
+        if (dx == 0 && dy == 0) {
+            return new MapLocation(0, 0);
+        }
+        
+        MapLocation startLocation = new MapLocation(49, 49);
+        MapLocation offset;
+        MapLocation windowLocation;
+        
+        double heading = pose.getHeading().getValue(); // print value of heading?
+        int octant = getOctant(heading);
+        switch (octant) {
+            case 0:
+            case 7:
+                offset = new MapLocation(dx, dy);
+                break;
+            
+            case 1:
+            case 2:
+                offset = new MapLocation(dy, dx);
+                break;
+                
+            case 3:
+            case 4:
+                offset = new MapLocation(-dy, dx);
+                break;
+                
+            case 5:
+            case 6:
+                offset = new MapLocation(-dx, -dy);
+                break;
+                
+            default:
+                offset = new MapLocation(0, 0);
+                break;
+        }
+        
+        windowLocation = sum(startLocation, offset);
+        System.out.println("Row: " + windowLocation.getRow() + ", Col: " + windowLocation.getColumn());
+        return windowLocation;
     }
     
     // fix: negavtive locations
