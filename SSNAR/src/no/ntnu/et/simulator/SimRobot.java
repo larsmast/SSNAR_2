@@ -1,26 +1,22 @@
-/*
- * This code is written as a part of a Master Thesis
- * the spring of 2016.
+/**
+ * This code is written as part of a Master Thesis
+ * the spring of 2017.
  *
- * Eirik Thon(Master 2016 @ NTNU)
+ * Geir Eikeland (Master 2017 @ NTNU)
  */
 package no.ntnu.et.simulator;
 
-import no.ntnu.et.general.Utilities;
-import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Angle;
-import no.ntnu.et.general.Position;
 import no.ntnu.et.general.Line;
+import no.ntnu.et.general.Pose;
+import no.ntnu.et.general.Position;
+import no.ntnu.et.general.Utilities;
 
 /**
- * This class represents the virtual robots in the simulator. It has private
- * variables to represent the state of the robots such as the pose
- * The robots behavior is created by calling methods in this class such as
- * moveRobot().
- * 
- * @author Eirik Thon
+ *
+ * @author geirhei
  */
-public class SimRobot {
+abstract public class SimRobot {
     private SimWorld world;
     private Pose pose;
     private Pose estimatedPose;
@@ -47,12 +43,6 @@ public class SimRobot {
     private Position targetPosition;
     private int diameter = 10;
     
-    /**
-     * Constructor for Robot.
-     * @param initialPose
-     * @param name
-     * @param id 
-     */
     public SimRobot(SimWorld world, Pose initialPose, String name, int id) {
         this.world = world;
         towerDirection = 1;
@@ -104,7 +94,7 @@ public class SimRobot {
      * @param theta
      * @param distance 
      */
-    void setTarget(double theta, double distance) {
+    public void setTarget(double theta, double distance) {
         synchronized(movementLock) {
             targetRotation = theta;
             targetDistance = distance;
@@ -128,7 +118,7 @@ public class SimRobot {
         return pose;
     }
     
-    Pose getInitialPose() {
+    public Pose getInitialPose() {
         return initialPose;
     }
     
@@ -261,4 +251,5 @@ public class SimRobot {
         String robotHandshake = generateHandshake(robotWidth, robotLength, toweroffset, axleoffset, sensoroffset, irheading, messageDeadline);
         return robotHandshake;
     }
+    
 }

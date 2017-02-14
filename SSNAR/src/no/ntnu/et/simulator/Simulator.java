@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import javax.swing.JFrame;
+import no.ntnu.ge.slam.SlamMappingController;
+import no.ntnu.ge.slam.SlamNavigationController;
 import no.ntnu.tem.communication.Inbox;
 
 /**
@@ -24,7 +26,7 @@ public class Simulator {
     private SimulatorGUI gui;
     private boolean estimateNoiseEnabled;
     private boolean sensorNoiseEnabled;
-    HashMap<Integer, SimRobotHandler> robotHandlers;
+    HashMap<Integer, RobotHandler> robotHandlers;
     private double simulationSpeed;
     private Inbox inbox;
     private int mode;
@@ -48,7 +50,7 @@ public class Simulator {
         }
         String mapPath = allMaps[0].getAbsolutePath();
         world.initMap(mapPath);
-        robotHandlers = new HashMap<Integer, SimRobotHandler>();
+        robotHandlers = new HashMap<Integer, RobotHandler>();
         estimateNoiseEnabled = true;
         sensorNoiseEnabled = true;
         this.mode = mode;
@@ -96,7 +98,7 @@ public class Simulator {
      */
     public void stop() {
         // Uses the closing routine defined in initializeGUI
-        for (HashMap.Entry<Integer, SimRobotHandler> entry : robotHandlers.entrySet()) {
+        for (HashMap.Entry<Integer, RobotHandler> entry : robotHandlers.entrySet()) {
             entry.getValue().interrupt();
         }
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -110,7 +112,12 @@ public class Simulator {
     public void connectToRobot(int id) {
         if (!robotHandlers.containsKey(id)) {
             SimRobot robot = world.getRobot(id);
-            SimRobotHandler robotHandler = this.new SimRobotHandler(robot);
+            RobotHandler robotHandler;
+            if (id == 0) {
+                robotHandler = this.new SlamRobotHandler((SlamRobot)robot);
+            } else {
+                robotHandler = this.new SimRobotHandler((BasicRobot)robot);
+            }
             robotHandler.setName("Robot " + Integer.toString(id));
             robotHandlers.put(id, robotHandler);
             robotHandlers.get(id).start();
@@ -191,11 +198,11 @@ public class Simulator {
     }
 
     /**
-    * Controller object for a robot of type SimRobot. This class contains
-    * a SimRobot object and is responsible for making that robot run.
+    * Controller object for a robot of type BasicRobot. This class contains
+ a BasicRobot object and is responsible for making that robot run.
     */
     private class SimRobotHandler extends RobotHandler {
-        final private SimRobot myRobot;
+        final private BasicRobot myRobot;
         final private String myName;
         final private int myID;
         private double estimateNoise;
@@ -206,9 +213,9 @@ public class Simulator {
         /**
          * Constructor
          *
-         * @param robot SimRobot
+         * @param robot BasicRobot
          */
-        public SimRobotHandler(SimRobot robot) {
+        public SimRobotHandler(BasicRobot robot) {
             myRobot = robot;
             myName = robot.getName();
             myID = robot.getId();
@@ -259,7 +266,7 @@ public class Simulator {
                     }
                     myRobot.measureIR(sensorNoise);
                     int[] update = myRobot.createMeasurement();
-                    String updateMsg = SimRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
+                    String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
                     counter = 0;
@@ -280,6 +287,8 @@ public class Simulator {
         private double estimateNoise;
         private double sensorNoise;
         private final Random noiseGenerator;
+        SlamMappingController mapping;
+        SlamNavigationController navigation;
         
         /**
          * Constructor
@@ -299,6 +308,13 @@ public class Simulator {
          */
         @Override
         public void run() {
+            mapping = new SlamMappingController(myRobot, inbox);
+            mapping.setName("SlamMappingController");
+            mapping.start();
+            navigation = new SlamNavigationController(myRobot);
+            navigation.setName("SlamNavigationController");
+            navigation.start();
+            
             int counter = 0;
             String content = myRobot.getHandShakeMessage();
             String dongleID = "[" + myID + "]:" + myName + ":";
@@ -325,6 +341,7 @@ public class Simulator {
                     String updateMsg = "{S,IDL}\n";
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
+                    myRobot.setBusy(false);
                 }
                 myRobot.turnTower();
                 
@@ -337,7 +354,8 @@ public class Simulator {
                     }
                     myRobot.measureIR(sensorNoise);
                     int[] update = myRobot.createMeasurement();
-                    String updateMsg = SimRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
+                    myRobot.addUpdate(update); // add update to updateQueue
+                    String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);
                     counter = 0;

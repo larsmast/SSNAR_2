@@ -1,1 +1,11 @@
+<<<<<<< HEAD
+SSNAR/nbproject/private/*
+SSNAR/build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+*.jar
+=======
 *.class
+>>>>>>> master

@@ -94,7 +94,7 @@ public class SimWorld {
             newRobot = new SlamRobot(this, initialPose, name, id);
             System.out.println("SlamRobot created");
         } else {
-            newRobot = new SimRobot(this, initialPose, name, id);
+            newRobot = new BasicRobot(this, initialPose, name, id);
             System.out.println("SimRobot created");
         }
         robotIDs.add(id);
