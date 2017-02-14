@@ -230,22 +230,18 @@ public class SlamMappingController extends Thread {
             case 7:
                 offset = new MapLocation(dx, dy);
                 break;
-            
             case 1:
             case 2:
                 offset = new MapLocation(dy, dx);
                 break;
-                
             case 3:
             case 4:
-                offset = new MapLocation(-dy, dx);
+                offset = new MapLocation(-dx, dy);
                 break;
-                
             case 5:
             case 6:
-                offset = new MapLocation(-dx, -dy);
+                offset = new MapLocation(-dy, -dx);
                 break;
-                
             default:
                 offset = new MapLocation(0, 0);
                 break;
