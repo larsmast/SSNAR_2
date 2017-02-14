@@ -31,6 +31,10 @@ public class Robot {
     private int[] initialPosition;
     private int[] estimatedPosition;
     private int robotOrientation;
+    private boolean homeFlag;
+    private final Object homeLock = new Object();
+    private boolean goingHomeFlag;
+    private final Object goingHomeLock = new Object();
     private boolean busyFlag;
     private final Object busyLock = new Object();
     private int[] destination;
@@ -242,6 +246,45 @@ public class Robot {
         }
     }
 
+    
+    /**
+     * Method that returns the robots goingHomeFlag
+     * 
+     * @return true if the robot is going home
+     */
+    public boolean isGoingHome(){
+        synchronized (goingHomeLock){
+            return goingHomeFlag;
+        }
+    }
+    /**
+     * Method that sets the robot to status going home
+     *
+     * @param goingHomeFlag true if the robot is going home
+     */
+    
+    public void setGoingHome(boolean goingHomeFlag){
+        synchronized (goingHomeLock) {
+            this.goingHomeFlag = goingHomeFlag;
+        }
+    }
+    
+      public boolean isHome(){
+        synchronized (homeLock){
+            return homeFlag;
+        }
+    }
+    /**
+     * Method that sets the robot to status going home
+     *
+     * @param homeFlag true if the robot is going home
+     */
+    
+    public void setHome(boolean homeFlag){
+        synchronized (homeLock) {
+            this.homeFlag = homeFlag;
+        }
+    }
     /**
      * Method that returns the robots destination
      *
