@@ -67,6 +67,8 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         btnManualDrive = new javax.swing.JButton();
         btnDiscRobot = new javax.swing.JButton();
+        btnGoHome = new javax.swing.JButton();
+        btnResume = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -161,6 +163,20 @@ public class RobotInfoGUI extends javax.swing.JFrame {
             }
         });
 
+        btnGoHome.setText("GoHome");
+        btnGoHome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGoHomeActionPerformed(evt);
+            }
+        });
+
+        btnResume.setText("Resume");
+        btnResume.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResumeActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -168,7 +184,11 @@ public class RobotInfoGUI extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnManualDrive, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnGoHome, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(btnResume, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnDiscRobot, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -176,7 +196,9 @@ public class RobotInfoGUI extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(btnManualDrive)
-                .addComponent(btnDiscRobot))
+                .addComponent(btnDiscRobot)
+                .addComponent(btnResume)
+                .addComponent(btnGoHome))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -209,6 +231,16 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         mainGUI.getApplication().disconnectRobot(robot.getId());
         this.dispose();
     }//GEN-LAST:event_btnDiscRobotActionPerformed
+
+    private void btnGoHomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoHomeActionPerformed
+        robot.setGoingHome(true);
+        //this.dispose();
+    }//GEN-LAST:event_btnGoHomeActionPerformed
+
+    private void btnResumeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResumeActionPerformed
+        // TODO add your handling code here:
+        robot.setGoingHome(false);
+    }//GEN-LAST:event_btnResumeActionPerformed
 
     /**
      * Method that starts the thread that updates the info in the window
@@ -264,7 +296,9 @@ public class RobotInfoGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDiscRobot;
+    private javax.swing.JButton btnGoHome;
     private javax.swing.JButton btnManualDrive;
+    private javax.swing.JButton btnResume;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
