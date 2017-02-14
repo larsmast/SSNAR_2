@@ -25,6 +25,10 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
+        
+        robot.setTarget(0, 200);
+        robot.setBusy(true);
+        
         while (true) {
             try {
                 Thread.sleep(5000);
@@ -56,12 +60,12 @@ public class SlamNavigationController extends Thread {
                     // localWindow = remoteWindow
                     // get remoteWindow for area ahead
                 
-            
+            /*
             if (!robot.isBusy() && !robot.isInCollisionManagement()) {
                 robot.setTarget(90, 100);
                 robot.setBusy(true);
             }
-            
+            */
         }
     }
     

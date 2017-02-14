@@ -249,6 +249,8 @@ public class WindowMap {
             for (int j = 0; j < width; j++) {
                 if (map[i][j] == 1) {
                     System.out.print('X');
+                } else if (map[i][j] == 2) {
+                    System.out.print('#');
                 } else {
                     System.out.print(map[i][j]);
                 }

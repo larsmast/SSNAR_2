@@ -27,9 +27,9 @@ public class SlamMappingController extends Thread {
     private final int cellSize = 2;
     private SlamRobot robot;
     private Inbox inbox;
-    private WindowMap map;
+    //private WindowMap map;
     private WindowMap localWindow;
-    private WindowMap remoteWindow;
+    //private WindowMap remoteWindow;
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
@@ -39,9 +39,9 @@ public class SlamMappingController extends Thread {
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
-        map = robot.getWindowMap();
+        //map = robot.getWindowMap();
         localWindow = robot.getLocalWindow();
-        remoteWindow = robot.getRemoteWindow();
+        //remoteWindow = robot.getRemoteWindow();
         updateQueue = robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(robot);
         origoLocation = null;
@@ -74,9 +74,11 @@ public class SlamMappingController extends Thread {
     
     @Override
     public void run() {
-        fillTestRemoteWindow(); // For testing with simple occupied row in window
+        //fillTestRemoteWindow(); // For testing with simple occupied row in window
+        /*
         remoteWindow.setGlobalStartRow(remoteWindow.getHeight());
         remoteWindow.setGlobalStartColumn(0); // already set
+        */
         
         while (true) {
             try {
@@ -97,8 +99,8 @@ public class SlamMappingController extends Thread {
             Angle robotAngle = measurementHandler.getRobotHeading();
             Pose robotPose = new Pose(robotPosition, robotAngle);
 
-            // Find the location of the robot in the world map
-            MapLocation robotLocation = findLocationInMap(robotPosition);
+            // Find the location of the robot in the global map
+            MapLocation robotLocation = findLocationInGlobalMap(robotPosition);
             if (origoLocation == null) {
                 origoLocation = robotLocation;
             }
@@ -131,21 +133,20 @@ public class SlamMappingController extends Thread {
             for (Sensor sensor : sensors) {
                 //boolean tooClose = false; - does not care about position of other robots
                 
-                MapLocation windowLocation = findLocationInWindow(robotPose);
-                MapLocation measurementLocation = findLocationInWindowMap(sensor.getOffsetPosition());
+                MapLocation measurementLocation = findLocationInWindow(robotPose);
                 if (sensor.isMeasurement()) {
-                    map.addMeasurement(measurementLocation, true);
+                    localWindow.addMeasurement(measurementLocation, true);
                 }
                 
                 // Create a measurements indicating no obstacle in the sensors line of sight
                 //ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robotLocation, measurementLocation);
                 ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(new MapLocation(49,49), measurementLocation);
                 for (MapLocation location : lineOfSight) {
-                    map.addMeasurement(location, false);
+                    localWindow.addMeasurement(location, false);
                 }
             //map.print();
             }
-        //map.print();   
+        localWindow.print();   
 
         }
     }
@@ -157,7 +158,7 @@ public class SlamMappingController extends Thread {
      * @param position
      * @return MapLocation
      */
-    private MapLocation findLocationInMap(Position position) {
+    private MapLocation findLocationInGlobalMap(Position position) {
         int row = 0;
         if(position.getYValue() >= 0){
             row = (int)(position.getYValue()/cellSize);
@@ -181,7 +182,7 @@ public class SlamMappingController extends Thread {
         return new MapLocation(row, column);
     }
     
-    
+    /*
     private MapLocation findLocationInWindowMap(Position position) {
         int row = 0;
         if(position.getYValue() >= 0){
@@ -208,11 +209,11 @@ public class SlamMappingController extends Thread {
         column += map.getWidth()/2 - 1;
         return new MapLocation(row, column);
     }
-    
+    */
     
     private MapLocation findLocationInWindow(Pose pose) {
         Position globalPosition = pose.getPosition();
-        MapLocation globalMapLocation = findLocationInMap(globalPosition);
+        MapLocation globalMapLocation = findLocationInGlobalMap(globalPosition);
         int dx = globalMapLocation.getColumn() - origoLocation.getColumn();
         int dy = globalMapLocation.getRow() - origoLocation.getRow();
         if (dx == 0 && dy == 0) {
@@ -243,6 +244,7 @@ public class SlamMappingController extends Thread {
                 offset = new MapLocation(-dy, -dx);
                 break;
             default:
+                System.out.println("Invalid octant!");
                 offset = new MapLocation(0, 0);
                 break;
         }
@@ -259,6 +261,7 @@ public class SlamMappingController extends Thread {
         return !(dx == 0 && dy == 0);
     }
     
+    /*
     private void fillTestRemoteWindow() {
         int[][] window = remoteWindow.getWindow();
         for (int i = 0; i < remoteWindow.getHeight(); i++) {
@@ -270,5 +273,6 @@ public class SlamMappingController extends Thread {
             window[75][k] = 1;
         }
     }
+    */
     
 }
