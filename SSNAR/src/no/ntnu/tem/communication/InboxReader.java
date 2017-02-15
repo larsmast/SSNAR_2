@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import no.ntnu.tem.application.RobotController;
-//Added Henrik Logfunction
-import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * This class retrieves the messages from the inbox and interprets them using
@@ -182,12 +182,13 @@ public class InboxReader extends Thread implements Language {
                         if (debug) {
                             System.out.println("CASE: DEBUG");
                         }
-                        try{
-                            PrintWriter writer = new PrintWriter("LOG.txt", "UTF-8");
-                            writer.println(content);
-                            writer.close();
-                            System.out.println(content);
-                        } catch (Exception e) {}
+                        try (FileWriter fw = new FileWriter("LOG.txt", true)) {
+                            fw.write(content);
+                            fw.write("\n");
+                            fw.flush();
+                        } catch (IOException e) {
+                            System.err.println("IOexception: " + e.getMessage());
+                        }
                         System.out.println(content);
                         break;
                         
