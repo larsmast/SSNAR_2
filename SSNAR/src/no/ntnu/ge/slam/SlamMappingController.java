@@ -101,9 +101,11 @@ public class SlamMappingController extends Thread {
 
             // Find the location of the robot in the global map
             MapLocation robotGlobalLocation = findLocationInGlobalMap(robotPosition);
+            System.out.println("robotGlobalLocation: Row: " + robotGlobalLocation.getRow() + ", Column: " + robotGlobalLocation.getColumn());
             // Check if robot is busy, if not set origoLocation to current location
             if (origoLocation == null || !robot.isBusy()) {
                 origoLocation = robotGlobalLocation;
+                System.out.println("origoLocation: Row: " + origoLocation.getRow() + ", Column: " + origoLocation.getColumn());
             }
             // Find the location of the robot in the window
             MapLocation robotWindowLocation = findLocationInWindow(robotAngle, robotGlobalLocation);
@@ -143,7 +145,7 @@ public class SlamMappingController extends Thread {
                 }
             //map.print();
             }
-        localWindow.print();   
+            //localWindow.print();   
 
         }
     }
@@ -211,6 +213,7 @@ public class SlamMappingController extends Thread {
     private MapLocation findLocationInWindow(Angle robotAngle, MapLocation globalMapLocation) {
         int dx = globalMapLocation.getColumn() - origoLocation.getColumn();
         int dy = globalMapLocation.getRow() - origoLocation.getRow();
+        //System.out.println("dx: " + dx + ", dy: " + dy);
         
         MapLocation offset;
         MapLocation startLocation = new MapLocation(24, 24);
@@ -242,7 +245,7 @@ public class SlamMappingController extends Thread {
         }
         
         windowLocation = sum(startLocation, offset);
-        System.out.println("Row: " + windowLocation.getRow() + ", Col: " + windowLocation.getColumn());
+        //System.out.println("Row: " + windowLocation.getRow() + ", Col: " + windowLocation.getColumn());
         return windowLocation;
     }
     
