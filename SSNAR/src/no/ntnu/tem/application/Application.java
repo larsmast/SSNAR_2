@@ -292,7 +292,21 @@ public final class Application {
         slam.removeRobot(name);
         navigation.removeRobot(name);
     }
+    
+    /**
+     * Logger function
+     */
+    public void startLogging(int robotID){
+        if (!simulatorActive) {
+            com.sendStartDebugToRobot(robotID);
+        }
+    }
 
+    public void stopLogging(int robotID){
+        if (!simulatorActive) {
+            com.sendStopDebugToRobot(robotID);
+        }
+    }    
     /**
      * Method that sends a command to a physical or simulated robot
      *

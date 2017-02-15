@@ -9,6 +9,7 @@ package no.ntnu.tem.gui;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import no.ntnu.tem.robot.Robot;
+import javax.swing.JCheckBox;
 
 /**
  * This class represents the robot-specific info window, containing information
@@ -21,6 +22,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
     private Robot robot;
     private MainGUI mainGUI;
     private ManualDriveGUI manualDriveGUI;
+    JCheckBox check = new JCheckBox("Checkbox", true);
     
     /**
      * Constructor of the class RobotInfoGUI
@@ -64,6 +66,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         lblRobotOrientation = new javax.swing.JLabel();
         lblCorrupt = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jCheckBox1 = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         btnManualDrive = new javax.swing.JButton();
         btnDiscRobot = new javax.swing.JButton();
@@ -102,6 +105,13 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setText("Corrupt messages:");
 
+        jCheckBox1.setText("Log");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlAttributesLayout = new javax.swing.GroupLayout(pnlAttributes);
         pnlAttributes.setLayout(pnlAttributesLayout);
         pnlAttributesLayout.setHorizontalGroup(
@@ -118,17 +128,21 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblyPos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblRobotOrientation, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lblyPos))
                     .addGroup(pnlAttributesLayout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblCorrupt)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(lblCorrupt)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnlAttributesLayout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblRobotOrientation, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(pnlAttributesLayout.createSequentialGroup()
+                        .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(15, 15, 15))))
         );
         pnlAttributesLayout.setVerticalGroup(
             pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,7 +158,8 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(lblCorrupt)))
+                    .addComponent(lblCorrupt)
+                    .addComponent(jCheckBox1)))
         );
 
         btnManualDrive.setText("Manual Drive");
@@ -193,7 +208,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                 .addComponent(lblRobotName)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlAttributes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addGap(29, 29, 29)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -209,6 +224,17 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         mainGUI.getApplication().disconnectRobot(robot.getId());
         this.dispose();
     }//GEN-LAST:event_btnDiscRobotActionPerformed
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        if(check.isSelected()){
+            mainGUI.getApplication().startLogging(robot.getId());
+            check = new JCheckBox("Checkbox", false);
+        }
+        else{
+            mainGUI.getApplication().stopLogging(robot.getId());
+            check = new JCheckBox("Checkbox", true);
+        }
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     /**
      * Method that starts the thread that updates the info in the window
@@ -265,6 +291,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDiscRobot;
     private javax.swing.JButton btnManualDrive;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
