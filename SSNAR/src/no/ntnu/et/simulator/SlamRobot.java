@@ -20,10 +20,10 @@ import no.ntnu.ge.slam.WindowMap;
  */
 public class SlamRobot extends SimRobot {
     private final int windowHeight = 100;
-    private final int windowWidth = 100;
+    private final int windowWidth = 50;
     private WindowMap windowMap;
-    private WindowMap localWindow;
-    private WindowMap remoteWindow;
+    //private WindowMap localWindow;
+    //private WindowMap remoteWindow;
     private LinkedBlockingQueue<int[]> updateQueue;
     private Position[] waypoints;
     private int numberOfWaypoints;
@@ -42,8 +42,8 @@ public class SlamRobot extends SimRobot {
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
         windowMap = new WindowMap(windowHeight, windowWidth);
-        localWindow = new WindowMap(200, 100); // test values
-        remoteWindow = new WindowMap(windowHeight, windowWidth);
+        //localWindow = new WindowMap(200, 100); // test values
+        //remoteWindow = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
         waypoints = new Position[10];
         numberOfWaypoints = 0;
@@ -60,6 +60,7 @@ public class SlamRobot extends SimRobot {
         return windowMap;
     }
     
+    /*
     public WindowMap getLocalWindow() {
         return localWindow;
     }
@@ -67,6 +68,7 @@ public class SlamRobot extends SimRobot {
     public WindowMap getRemoteWindow() {
         return remoteWindow;
     }
+    */
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
         return updateQueue;

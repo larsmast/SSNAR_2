@@ -26,7 +26,7 @@ public class SlamNavigationController extends Thread {
     public void run() {
         setName("Slam navigation controller");
         
-        robot.setTarget(0, 200);
+        robot.setTarget(0, 100);
         robot.setBusy(true);
         
         while (true) {
