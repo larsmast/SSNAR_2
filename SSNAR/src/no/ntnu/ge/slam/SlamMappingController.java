@@ -109,6 +109,7 @@ public class SlamMappingController extends Thread {
             }
             // Find the location of the robot in the window
             MapLocation robotWindowLocation = findLocationInWindow(robotAngle, robotGlobalLocation);
+            robot.setRobotWindowLocation(robotWindowLocation);
             System.out.println("robotWindowLocation: Row: " + robotWindowLocation.getRow() + ", Column: " + robotWindowLocation.getColumn());
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {

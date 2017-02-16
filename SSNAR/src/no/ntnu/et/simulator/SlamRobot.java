@@ -32,6 +32,7 @@ public class SlamRobot extends SimRobot {
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
     int robotOrientation;
+    MapLocation robotWindowLocation;
     
     /*
     MapLocation[] localFrontierLocations;
@@ -49,6 +50,7 @@ public class SlamRobot extends SimRobot {
         //waypoints = new Position[10];
         //numberOfWaypoints = 0;
         setRobotOrientation((int)initialPose.getHeading().getValue());
+        robotWindowLocation = new MapLocation(windowHeight/4, windowWidth/2);
         
         /*
         localFrontierLocations = new MapLocation[600];
@@ -56,6 +58,14 @@ public class SlamRobot extends SimRobot {
         localOccupiedLocations = new MapLocation[600];
         remoteOccupiedLocations = new MapLocation[600];
         */
+    }
+    
+    public MapLocation getRobotWindowLocation() {
+        return robotWindowLocation;
+    }
+    
+    public void setRobotWindowLocation(MapLocation location) {
+        robotWindowLocation = location;
     }
     
     public void setRobotOrientation(int orientation) {

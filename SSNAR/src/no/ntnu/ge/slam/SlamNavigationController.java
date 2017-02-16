@@ -19,11 +19,14 @@ public class SlamNavigationController extends Thread {
     SlamRobot robot;
     int[] command;
     WindowMap localWindow;
+    boolean collision = false;
+    int[][] windowArray;
     
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
         command = new int[] {0, 0};
         localWindow = robot.getWindowMap();
+        windowArray = localWindow.getWindow();
     }
     
     @Override
@@ -57,12 +60,34 @@ public class SlamNavigationController extends Thread {
             }
             
             if (!robot.isBusy()) {
-                int currentOrientation = robot.getRobotOrientation();
-                int newOrientation = getNewOrientation(currentOrientation, 1);
-                int rotation = newOrientation - currentOrientation;
+                //int currentOrientation = robot.getRobotOrientation();
+                //int newOrientation = getNewOrientation(currentOrientation, 1);
+                //int rotation = newOrientation - currentOrientation;
                 int distance = localWindow.getHeight();
-                robot.setTarget(rotation, distance);
+                //robot.setTarget(rotation, distance);
+                robot.setTarget(0, distance);
                 robot.setBusy(true);
+            }
+            
+            int frontLine = robot.getRobotWindowLocation().getRow();
+            int column = robot.getRobotWindowLocation().getColumn();
+            collision = false;
+            for (int i = 0; i < 6; i++) {
+                for (int j = -2; j < 2; j++) {
+                    if (windowArray[frontLine+15+i][column+j] == 1) {
+                        collision = true;
+                        robot.setTarget(0, 0);
+                        robot.setBusy(false);
+                        int currentOrientation = robot.getRobotOrientation();
+                        int newOrientation = getNewOrientation(currentOrientation, 1);
+                        int rotation = newOrientation - currentOrientation;
+                        int distance = localWindow.getHeight();
+                        robot.setTarget(rotation, distance);
+                        robot.setBusy(true);
+                        break;
+                    }
+                }
+                
             }
             
             // while (!origo of remoteWindow reached)
@@ -92,6 +117,10 @@ public class SlamNavigationController extends Thread {
             }
             */
         }
+    }
+    
+    private void changeDirection() {
+        
     }
     
     private int[] findCommandToTarget(int rotation, int distance) {
