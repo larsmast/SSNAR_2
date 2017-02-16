@@ -25,12 +25,13 @@ public class SlamRobot extends SimRobot {
     //private WindowMap localWindow;
     //private WindowMap remoteWindow;
     private LinkedBlockingQueue<int[]> updateQueue;
-    private Position[] waypoints;
-    private int numberOfWaypoints;
-    private Position lastWaypoint;
+    //private Position[] waypoints;
+    //private int numberOfWaypoints;
+    //private Position lastWaypoint;
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
+    int robotOrientation;
     
     /*
     MapLocation[] localFrontierLocations;
@@ -45,8 +46,9 @@ public class SlamRobot extends SimRobot {
         //localWindow = new WindowMap(200, 100); // test values
         //remoteWindow = new WindowMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
-        waypoints = new Position[10];
-        numberOfWaypoints = 0;
+        //waypoints = new Position[10];
+        //numberOfWaypoints = 0;
+        setRobotOrientation((int)initialPose.getHeading().getValue());
         
         /*
         localFrontierLocations = new MapLocation[600];
@@ -56,27 +58,27 @@ public class SlamRobot extends SimRobot {
         */
     }
     
+    public void setRobotOrientation(int orientation) {
+        robotOrientation = orientation;
+    }
+    
+    public int getRobotOrientation() {
+        return robotOrientation;
+    }
+    
     public WindowMap getWindowMap() {
         return windowMap;
     }
-    
-    /*
-    public WindowMap getLocalWindow() {
-        return localWindow;
-    }
-    
-    public WindowMap getRemoteWindow() {
-        return remoteWindow;
-    }
-    */
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
         return updateQueue;
     }
     
+    /*
     public Position getNextWaypoint() {
         return waypoints[numberOfWaypoints-1];
     }
+    */
     
     public boolean getInWallCollision() {
         return inWallCollision;

@@ -76,6 +76,8 @@ public class SlamMappingController extends Thread {
         remoteWindow.setGlobalStartColumn(0); // already set
         */
         
+        int[][] testWindow = localWindow.getWindow();
+        
         while (true) {
             try {
                 Thread.sleep(10);
@@ -94,6 +96,8 @@ public class SlamMappingController extends Thread {
             Position robotPosition = measurementHandler.getRobotPosition();
             Angle robotAngle = measurementHandler.getRobotHeading();
             //Pose robotPose = new Pose(robotPosition, robotAngle);
+            
+            robot.setRobotOrientation((int) robotAngle.getValue());
 
             // Find the location of the robot in the global map
             MapLocation robotGlobalLocation = findLocationInGlobalMap(robotPosition);
@@ -122,7 +126,8 @@ public class SlamMappingController extends Thread {
                 }
             //map.print();
             }
-            localWindow.print();   
+            //localWindow.print();
+            //localWindow.testPrint();
 
         }
     }
