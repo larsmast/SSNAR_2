@@ -7,6 +7,7 @@
 package no.ntnu.ge.slam;
 
 import static java.lang.Math.abs;
+import java.util.ArrayList;
 import no.ntnu.et.map.MapLocation;
 
 /**
@@ -23,10 +24,19 @@ public class WindowMap {
     private final Object mapLock = new Object();
     private int globalStartRow = 0;
     private int globalStartColumn = 0;
+    private final int cellSize = 2;
     /*
     private MapLocation[] frontierLocations;
     private MapLocation[] occupiedLocations;
     */
+    public enum CellState {
+        FREE(0), OCCUPIED(1), UNEXPLORED(2);
+        private int value;
+        
+        private CellState(int value) {
+            this.value = value;
+        }
+    }
     
     /**
      * Constructor
@@ -205,8 +215,13 @@ public class WindowMap {
             synchronized (mapLock) {
                 if (measurement) {
                     map[row][col] = 1; //occupied
+                    //addRestrictingCells(location);
                 } else {
+                    if (map[row][col] == 1) {
+                        //removeRestrictingCells(location);
+                    }
                     map[row][col] = 0; // free
+                    
                 } // (unexplored = 2)
             }
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -239,6 +254,72 @@ public class WindowMap {
             }
         }
         */
+    }
+    
+    /**
+     * Based on createCircle by Thon (2016)
+     * @param location 
+     */
+    private void addRestrictingCells(MapLocation location) {
+        int radius = 15/cellSize;
+        int row = location.getRow();
+        int column = location.getColumn();
+        int top = row + radius;
+        if (top > height-1) {
+            top = height-1;
+        }
+        int bottom = row - radius;
+        if (bottom < 0) {
+            bottom = 0;
+        }
+        int right = column + radius;
+        if (right > width-1) {
+            right = width-1;
+        }
+        int left = column - radius;
+        if (left < 0) {
+            left = 0;
+        }
+        for (int i = bottom; i <= top; i++) {
+            for (int j = left; j <= right; j++) {
+                if ((i-row)*(i-row)+(j-column)*(j-column) <= radius*radius) {
+                    if (map[i][j] != 1 && map[i][j] != 2) {
+                        map[i][j] = 3; //restricted
+                    }
+                }
+            }
+        }
+    }
+    
+    private void removeRestrictingCells(MapLocation location) {
+        int radius = 15/cellSize;
+        int row = location.getRow();
+        int column = location.getColumn();
+        int top = row + radius;
+        if (top > height-1) {
+            top = height-1;
+        }
+        int bottom = row - radius;
+        if (bottom < 0) {
+            bottom = 0;
+        }
+        int right = column + radius;
+        if (right > width-1) {
+            right = width-1;
+        }
+        int left = column - radius;
+        if (left < 0) {
+            left = 0;
+        }
+        for (int i = bottom; i <= top; i++) {
+            for (int j = left; j <= right; j++) {
+                if ((i-row)*(i-row)+(j-column)*(j-column) <= radius*radius) {
+                    if (map[i][j] != 1 && map[i][j] != 2) {
+                        map[i][j] = 0; //free
+                    }
+                }
+            }
+        }
     }
     
     /**
