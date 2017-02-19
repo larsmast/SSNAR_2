@@ -64,6 +64,10 @@ abstract public class SimRobot {
         targetPosition = Position.copy(pose.getPosition());
     }
     
+    public int getRobotOrientation() {
+        return (int) pose.getHeading().getValue();
+    }
+    
     double getMaxSensorDistance(){
         return maxVisualLength;
     }

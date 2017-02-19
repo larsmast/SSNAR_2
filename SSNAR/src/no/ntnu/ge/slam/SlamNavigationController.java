@@ -56,7 +56,6 @@ public class SlamNavigationController extends Thread {
             
             if (collision = checkCollision()) {
                 robot.setBusy(false);
-                //robot.setTarget(0, 0);
             }
             int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
             if (!robot.isBusy()) {
@@ -64,41 +63,17 @@ public class SlamNavigationController extends Thread {
                 if (collision) {
                     robot.setTarget(90, distance);
                     localWindow.setOrientation(updateMapOrientation(90));
-                    collision = false;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    collision = checkCollision();
                 } else {
                     robot.setTarget(0, distance);
                 }
                 robot.setBusy(true);
             }
-            
-            
-            
-            // while (!origo of remoteWindow reached)
-            
-                // if (wall reached)
-                    // status = not busy
-                    //turn in some direction
-                    // shift localWindow to current location
-                    // get remoteWindow for the next direction
-
-                // else if (fully explored ahead)
-                    // status = not busy
-                    // turn in some direction
-                    // shift localWindow to current location
-                    // get remoteWindow for the next direction
-
-                // else if (unexplored fields ahead, middle of remoteWindow reached)
-                    // status = busy
-                    // don't change direction
-                    // localWindow = remoteWindow
-                    // get remoteWindow for area ahead
-                
-            /*
-            if (!robot.isBusy() && !robot.isInCollisionManagement()) {
-                robot.setTarget(90, 100);
-                robot.setBusy(true);
-            }
-            */
         }
     }
     

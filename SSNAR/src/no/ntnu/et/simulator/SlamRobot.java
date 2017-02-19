@@ -26,13 +26,12 @@ public class SlamRobot extends SimRobot {
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
-    private int robotOrientation;
+    //private int robotOrientation;
     private MapLocation robotWindowLocation;
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
-        robotOrientation = (int) initialPose.getHeading().getValue();
-        windowMap = new WindowMap(windowHeight, windowWidth, robotOrientation);
+        windowMap = new WindowMap(windowHeight, windowWidth, (int) initialPose.getHeading().getValue());
         updateQueue = new LinkedBlockingQueue<>(5);
         robotWindowLocation = new MapLocation(windowHeight/4, windowWidth/2);
     }
@@ -45,6 +44,7 @@ public class SlamRobot extends SimRobot {
         robotWindowLocation = location;
     }
     
+    /*
     public void setRobotOrientation(int orientation) {
         robotOrientation = orientation;
     }
@@ -52,6 +52,7 @@ public class SlamRobot extends SimRobot {
     public int getRobotOrientation() {
         return robotOrientation;
     }
+    */
     
     public WindowMap getWindowMap() {
         return windowMap;

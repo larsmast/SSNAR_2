@@ -27,24 +27,13 @@ public class WindowMap {
     private final int cellSize = 2;
     private int orientation;
     private boolean orientationChanged = false;
-    /*
-    private MapLocation[] frontierLocations;
-    private MapLocation[] occupiedLocations;
-    */
-    public enum CellState {
-        FREE(0), OCCUPIED(1), UNEXPLORED(2);
-        private int value;
-        
-        private CellState(int value) {
-            this.value = value;
-        }
-    }
     
     /**
      * Constructor
      * 
      * @param height
-     * @param width 
+     * @param width
+     * @param orientation
      */
     public WindowMap(int height, int width, int orientation) {
         this.height = height;
@@ -58,7 +47,11 @@ public class WindowMap {
         }
     }
     
-    int getOrientation() {
+    boolean getOrientationChanged() {
+        return orientationChanged;
+    }
+    
+    public int getOrientation() {
         return orientation;
     }
     
