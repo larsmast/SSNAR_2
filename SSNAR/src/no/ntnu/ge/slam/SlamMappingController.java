@@ -32,7 +32,6 @@ public class SlamMappingController extends Thread {
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
     private MapLocation origoLocation;
-    //private boolean robotBusy;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
@@ -41,7 +40,6 @@ public class SlamMappingController extends Thread {
         updateQueue = robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(robot);
         origoLocation = null;
-        //robotBusy = robot.isBusy();
         
     }
     
@@ -127,7 +125,7 @@ public class SlamMappingController extends Thread {
                 }
             //map.print();
             }
-            //localWindow.print();
+            localWindow.print();
             //localWindow.testPrint();
 
         }

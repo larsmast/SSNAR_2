@@ -22,42 +22,19 @@ public class SlamRobot extends SimRobot {
     private final int windowHeight = 100;
     private final int windowWidth = 50;
     private WindowMap windowMap;
-    //private WindowMap localWindow;
-    //private WindowMap remoteWindow;
     private LinkedBlockingQueue<int[]> updateQueue;
-    //private Position[] waypoints;
-    //private int numberOfWaypoints;
-    //private Position lastWaypoint;
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
-    int robotOrientation;
-    MapLocation robotWindowLocation;
-    
-    /*
-    MapLocation[] localFrontierLocations;
-    MapLocation[] remoteFrontierLocations;
-    MapLocation[] localOccupiedLocations;
-    MapLocation[] remoteOccupiedLocations;
-    */
+    private int robotOrientation;
+    private MapLocation robotWindowLocation;
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
-        windowMap = new WindowMap(windowHeight, windowWidth);
-        //localWindow = new WindowMap(200, 100); // test values
-        //remoteWindow = new WindowMap(windowHeight, windowWidth);
+        robotOrientation = (int) initialPose.getHeading().getValue();
+        windowMap = new WindowMap(windowHeight, windowWidth, robotOrientation);
         updateQueue = new LinkedBlockingQueue<>(5);
-        //waypoints = new Position[10];
-        //numberOfWaypoints = 0;
-        setRobotOrientation((int)initialPose.getHeading().getValue());
         robotWindowLocation = new MapLocation(windowHeight/4, windowWidth/2);
-        
-        /*
-        localFrontierLocations = new MapLocation[600];
-        remoteFrontierLocations = new MapLocation[600];
-        localOccupiedLocations = new MapLocation[600];
-        remoteOccupiedLocations = new MapLocation[600];
-        */
     }
     
     public MapLocation getRobotWindowLocation() {
@@ -83,12 +60,6 @@ public class SlamRobot extends SimRobot {
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
         return updateQueue;
     }
-    
-    /*
-    public Position getNextWaypoint() {
-        return waypoints[numberOfWaypoints-1];
-    }
-    */
     
     public boolean getInWallCollision() {
         return inWallCollision;

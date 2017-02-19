@@ -25,6 +25,7 @@ public class WindowMap {
     private int globalStartRow = 0;
     private int globalStartColumn = 0;
     private final int cellSize = 2;
+    private int orientation;
     /*
     private MapLocation[] frontierLocations;
     private MapLocation[] occupiedLocations;
@@ -44,10 +45,11 @@ public class WindowMap {
      * @param height
      * @param width 
      */
-    public WindowMap(int height, int width) {
+    public WindowMap(int height, int width, int orientation) {
         this.height = height;
         this.width = width;
         map = new int[this.height][this.width];
+        this.orientation = orientation;
         init();
         /*
         frontierLocations = new MapLocation[500];
@@ -62,6 +64,16 @@ public class WindowMap {
                     map[i][j] = 2; // unexplored
                 }
             }
+        }
+    }
+    
+    int getOrientation() {
+        return orientation;
+    }
+    
+    void setOrientation(int angle) {
+        synchronized (mapLock) {
+            orientation = angle;
         }
     }
     

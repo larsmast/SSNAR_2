@@ -6,7 +6,6 @@
  */
 package no.ntnu.ge.slam;
 
-import no.ntnu.et.general.Angle;
 import static no.ntnu.et.map.MapLocation.getOctant;
 import no.ntnu.et.simulator.SlamRobot;
 
@@ -17,14 +16,14 @@ import no.ntnu.et.simulator.SlamRobot;
 public class SlamNavigationController extends Thread {
     private boolean paused = false;
     SlamRobot robot;
-    int[] command;
+    //int[] command;
     WindowMap localWindow;
     boolean collision = false;
     int[][] windowArray;
     
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
-        command = new int[] {0, 0};
+        //command = new int[] {0, 0};
         localWindow = robot.getWindowMap();
         windowArray = localWindow.getWindow();
     }
@@ -43,14 +42,10 @@ public class SlamNavigationController extends Thread {
     
     @Override
     public void run() {
-        setName("Slam navigation controller");
-        
-        robot.setTarget(0, 100);
-        robot.setBusy(true);
-        
+        setName("Slam navigation controller");        
         while (true) {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(100); // was 5000
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 break;
@@ -59,36 +54,24 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
+            if (collision = checkCollision()) {
+                robot.setBusy(false);
+                //robot.setTarget(0, 0);
+            }
+            int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
             if (!robot.isBusy()) {
-                //int currentOrientation = robot.getRobotOrientation();
-                //int newOrientation = getNewOrientation(currentOrientation, 1);
-                //int rotation = newOrientation - currentOrientation;
-                int distance = localWindow.getHeight();
-                //robot.setTarget(rotation, distance);
-                robot.setTarget(0, distance);
+                int distance = targetRow - robot.getRobotWindowLocation().getRow();
+                if (collision) {
+                    robot.setTarget(90, distance);
+                    localWindow.setOrientation(updateMapOrientation(90));
+                    collision = false;
+                } else {
+                    robot.setTarget(0, distance);
+                }
                 robot.setBusy(true);
             }
             
-            int frontLine = robot.getRobotWindowLocation().getRow();
-            int column = robot.getRobotWindowLocation().getColumn();
-            collision = false;
-            for (int i = 0; i < 6; i++) {
-                for (int j = -2; j < 2; j++) {
-                    if (windowArray[frontLine+15+i][column+j] == 1) {
-                        collision = true;
-                        robot.setTarget(0, 0);
-                        robot.setBusy(false);
-                        int currentOrientation = robot.getRobotOrientation();
-                        int newOrientation = getNewOrientation(currentOrientation, 1);
-                        int rotation = newOrientation - currentOrientation;
-                        int distance = localWindow.getHeight();
-                        robot.setTarget(rotation, distance);
-                        robot.setBusy(true);
-                        break;
-                    }
-                }
-                
-            }
+            
             
             // while (!origo of remoteWindow reached)
             
@@ -118,6 +101,27 @@ public class SlamNavigationController extends Thread {
             */
         }
     }
+    
+    private boolean checkCollision() {
+        int robotRow = robot.getRobotWindowLocation().getRow();
+        int robotColumn = robot.getRobotWindowLocation().getColumn();
+        int safeDistance = 20;
+        int frontRow = robotRow + safeDistance;
+        for (int i = 1; i < safeDistance+1; i++) {
+            for (int j = -safeDistance; j < safeDistance+1; j++) {
+                try {
+                    if (windowArray[robotRow+i][robotColumn+j] == 1) {
+                        return true;
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+                
+            }
+        }
+        return false;
+    }
+    
     
     private void changeDirection() {
         
@@ -155,6 +159,17 @@ public class SlamNavigationController extends Thread {
         } else {
             return (currentOrientation + 90*turnDirection);
         }
+    }
+    
+    private int updateMapOrientation(int turnAngle) {
+        int currentOrientation = localWindow.getOrientation();
+        int newOrientation = currentOrientation + turnAngle;
+        if (newOrientation < 0) {
+            newOrientation += 360;
+        } else if (newOrientation >= 360) {
+            newOrientation -= 360;
+        }
+        return newOrientation;
     }
     
     /*
