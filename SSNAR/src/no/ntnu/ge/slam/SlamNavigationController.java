@@ -54,6 +54,8 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
+            
+            
             if (collision = checkCollision()) {
                 robot.setBusy(false);
             }
@@ -62,13 +64,15 @@ public class SlamNavigationController extends Thread {
                 int distance = targetRow - robot.getRobotWindowLocation().getRow();
                 if (collision) {
                     robot.setTarget(90, distance);
+                    localWindow.rotateWindow(90, robot.getRobotWindowLocation());
                     localWindow.setOrientation(updateMapOrientation(90));
+                    localWindow.setOrientationChanged(true);
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    collision = checkCollision();
+                    //collision = checkCollision();
                 } else {
                     robot.setTarget(0, distance);
                 }

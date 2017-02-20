@@ -31,7 +31,6 @@ public class SlamMappingController extends Thread {
     private boolean paused;
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
-    private MapLocation origoLocation;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
@@ -39,13 +38,13 @@ public class SlamMappingController extends Thread {
         localWindow = robot.getWindowMap();
         updateQueue = robot.getUpdateQueue();
         measurementHandler = new SlamMeasurementHandler(robot);
-        origoLocation = null;
         localWindow.setOrientation((int) robot.getInitialPose().getHeading().getValue());
-        
+        this.robot.setGlobalStartLocation(findLocationInGlobalMap(robot.getInitialPose().getPosition()));
+        this.robot.setGlobalRobotLocation(findLocationInGlobalMap(robot.getInitialPose().getPosition()));
     }
     
-    @Override
-    public void start(){
+   @Override
+   public void start(){
         if(!isAlive()){
             super.start();
         }
@@ -83,27 +82,21 @@ public class SlamMappingController extends Thread {
             if (measurementHandler.updateMeasurement() == false) {
                 continue;
             }
-            
-            if (localWindow.getOrientationChanged()) {
-                
-            }
-            
-            Position robotPosition = measurementHandler.getRobotPosition();
-            Angle robotAngle = measurementHandler.getRobotHeading();
-            
-            //robot.setRobotOrientation((int) robotAngle.getValue());
 
             // Find the location of the robot in the global map
-            MapLocation robotGlobalLocation = findLocationInGlobalMap(robotPosition);
-            //System.out.println("robotGlobalLocation: Row: " + robotGlobalLocation.getRow() + ", Column: " + robotGlobalLocation.getColumn());
-            // Check if robot is busy, if not set origoLocation to current location
-            if (origoLocation == null || !robot.isBusy()) {
-                origoLocation = robotGlobalLocation;
+            Position robotPosition = measurementHandler.getRobotPosition();
+            //Angle robotAngle = measurementHandler.getRobotHeading();
+            MapLocation globalRobotLocation = findLocationInGlobalMap(robotPosition);
+            robot.setGlobalRobotLocation(globalRobotLocation);
+            
+            if (!robot.isBusy() || robot.getGlobalStartLocation() == null) {
+                robot.setGlobalStartLocation(globalRobotLocation);
             }
             // Find the location of the robot in the window
-            MapLocation robotWindowLocation = findLocationInWindow(localWindow.getOrientation(), robotGlobalLocation);
+            MapLocation robotWindowLocation = findLocationInWindow(localWindow.getOrientation(), globalRobotLocation);
             robot.setRobotWindowLocation(robotWindowLocation);
             System.out.println("robotWindowLocation: Row: " + robotWindowLocation.getRow() + ", Column: " + robotWindowLocation.getColumn());
+            
             Sensor[] sensors = measurementHandler.getIRSensorData();
             for (Sensor sensor : sensors) {
                 //boolean tooClose = false; - does not care about position of other robots
@@ -119,9 +112,10 @@ public class SlamMappingController extends Thread {
                     localWindow.addMeasurement(location, false);
                 }
             }
+            
+            // Test
+            localWindow.addRobotWindowLocation(robotWindowLocation);
             localWindow.print();
-            //localWindow.testPrint();
-
         }
     }
     
@@ -157,12 +151,12 @@ public class SlamMappingController extends Thread {
     }
     
     private MapLocation findLocationInWindow(int mapOrientation, MapLocation globalMapLocation) {
-        int dx = globalMapLocation.getColumn() - origoLocation.getColumn();
-        int dy = globalMapLocation.getRow() - origoLocation.getRow();
+        int dx = globalMapLocation.getColumn() - robot.getGlobalStartLocation().getColumn();
+        int dy = globalMapLocation.getRow() - robot.getGlobalStartLocation().getRow();
         //System.out.println("dx: " + dx + ", dy: " + dy);
         
         MapLocation offset;
-        MapLocation startLocation = new MapLocation(24, 24);
+        MapLocation windowStartLocation = new MapLocation(24, 24);
         MapLocation windowLocation;
         
         int octant = getOctant(mapOrientation);
@@ -189,10 +183,11 @@ public class SlamMappingController extends Thread {
                 break;
         }
         
-        windowLocation = sum(startLocation, offset);
+        windowLocation = sum(windowStartLocation, offset);
         //System.out.println("Row: " + windowLocation.getRow() + ", Col: " + windowLocation.getColumn());
         return windowLocation;
     }
+    
     
     // fix: negative locations
     /*
