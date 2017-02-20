@@ -89,7 +89,7 @@ public class SlamMappingController extends Thread {
             MapLocation globalRobotLocation = findLocationInGlobalMap(robotPosition);
             robot.setGlobalRobotLocation(globalRobotLocation);
             
-            if (!robot.isBusy() || robot.getGlobalStartLocation() == null) {
+            if (!robot.isBusy() || robot.getGlobalStartLocation() == null) { // necessary?
                 robot.setGlobalStartLocation(globalRobotLocation);
             }
             // Find the location of the robot in the window

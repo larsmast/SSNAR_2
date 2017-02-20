@@ -64,9 +64,11 @@ public class SlamNavigationController extends Thread {
                 int distance = targetRow - robot.getRobotWindowLocation().getRow();
                 if (collision) {
                     robot.setTarget(90, distance);
-                    localWindow.rotateWindow(90, robot.getRobotWindowLocation());
+                    //localWindow.rotateWindow(90, robot.getRobotWindowLocation());
+                    localWindow.testFillWindow();
                     localWindow.setOrientation(updateMapOrientation(90));
                     localWindow.setOrientationChanged(true);
+                    collision = false;
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -84,7 +86,7 @@ public class SlamNavigationController extends Thread {
     private boolean checkCollision() {
         int robotRow = robot.getRobotWindowLocation().getRow();
         int robotColumn = robot.getRobotWindowLocation().getColumn();
-        int safeDistance = 20;
+        int safeDistance = 10;
         int frontRow = robotRow + safeDistance;
         for (int i = 1; i < safeDistance+1; i++) {
             for (int j = -safeDistance; j < safeDistance+1; j++) {

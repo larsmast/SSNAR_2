@@ -139,6 +139,14 @@ public class WindowMap {
         
     }
     
+    void testFillWindow() {
+        for (int i = 0; i < height; i ++) {
+            for (int j = 0; j < width; j++) {
+                map[i][j] = 2;
+            }
+        }
+    }
+    
     /**
      * Compares two map locations, determines if the data in the map needs to
      * be shifted because of movement, and calls the correct shift operation
