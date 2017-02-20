@@ -51,6 +51,10 @@ public class WindowMap {
         return orientationChanged;
     }
     
+    void setOrientationChanged(boolean changed) {
+        orientationChanged = changed;
+    }
+    
     public int getOrientation() {
         return orientation;
     }
@@ -97,6 +101,42 @@ public class WindowMap {
      */
     int getWidth() {
         return this.width;
+    }
+    
+    void rotateWindow(int angle, MapLocation center) {
+        int centerRow = center.getRow();
+        int topRow = centerRow + width/2;
+        int bottomRow = centerRow - width/2;
+        if (angle == 90 && angle == -90) {
+            // Copy to top of array
+            for (int i = 0; i < height/2; i++) {
+                for (int j = 0; j < width; j++) {
+                    map[height-1-i][j] = map[topRow-i][j];
+                }
+            }
+            if (angle == 90) {
+                for (int k = 0; k < height/2; k++) {
+                    for (int l = 0; l < width; l++) {
+                        map[k][l] = map[width-1-l][k];
+                    }
+                }
+            } else if (angle == -90) {
+                
+            }
+            
+        } else if (angle == 180) {
+            
+        } else {
+            //invalid angle
+        }
+        
+        // Set top of window to unexplored
+        for (int i = 0; i < height/2; i++) {
+            for (int j = 0; j < width; j++) {
+                map[height/2+i][j] = 2; // unexplored
+            }
+        }
+        
     }
     
     /**
@@ -197,8 +237,6 @@ public class WindowMap {
     
     /**
      * Updates the map.
-     * (This method also updates the restricted and weakly
-     * restricted area of the map if the occupied status of a cell changes.)
      * 
      * @param location
      * @param measurement 
@@ -250,6 +288,12 @@ public class WindowMap {
             }
         }
         */
+    }
+    
+    void addRobotWindowLocation(MapLocation robotWindowLocation) {
+        int row = robotWindowLocation.getRow();
+        int column = robotWindowLocation.getColumn();
+        map[row][column] = 9;
     }
     
     /**
@@ -328,6 +372,8 @@ public class WindowMap {
                     System.out.print('X');
                 } else if (map[i][j] == 2) {
                     System.out.print('#');
+                } else if (map[i][j] == 9) {
+                    System.out.print("@");
                 } else {
                     System.out.print(map[i][j]);
                 }
