@@ -42,6 +42,10 @@ public class SlamRobot extends SimRobot {
         
     }
     
+    public MapLocation getWindowStartLocation() {
+        return windowStartLocation;
+    }
+    
     public void setGlobalStartLocation(MapLocation location) {
         globalStartLocation = location;
     }

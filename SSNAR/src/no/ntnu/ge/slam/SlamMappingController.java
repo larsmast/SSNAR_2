@@ -156,7 +156,7 @@ public class SlamMappingController extends Thread {
         //System.out.println("dx: " + dx + ", dy: " + dy);
         
         MapLocation offset;
-        MapLocation windowStartLocation = new MapLocation(24, 24);
+        MapLocation windowStartLocation = robot.getWindowStartLocation();
         MapLocation windowLocation;
         
         int octant = getOctant(mapOrientation);

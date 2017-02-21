@@ -154,7 +154,7 @@ public class WindowMap {
      * 
      * @param currentLoc
      * @param newLoc
-     * @return true if a shift occured
+     * @return true if a shift occurred
      */
     public boolean shift(MapLocation currentLoc, MapLocation newLoc) {
         int dx = newLoc.getColumn() - currentLoc.getColumn();
@@ -252,12 +252,13 @@ public class WindowMap {
     public void addMeasurement(MapLocation location, boolean measurement) {
         int row = location.getRow();
         int col = location.getColumn();
-        //System.out.println("Row: " + row + ", Col: " + col);
+        // System.out.println("Row: " + row + ", Col: " + col);
         try {
             synchronized (mapLock) {
                 if (measurement) {
                     map[row][col] = 1; //occupied
                     //addRestrictingCells(location);
+                    System.out.println("Row: " + row + ", Col: " + col);
                 } else {
                     if (map[row][col] == 1) {
                         //removeRestrictingCells(location);

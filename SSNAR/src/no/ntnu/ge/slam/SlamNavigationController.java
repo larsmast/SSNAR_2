@@ -42,7 +42,8 @@ public class SlamNavigationController extends Thread {
     
     @Override
     public void run() {
-        setName("Slam navigation controller");        
+        setName("Slam navigation controller");
+        int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
         while (true) {
             try {
                 Thread.sleep(100); // was 5000
@@ -54,31 +55,27 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            
-            
             if (collision = checkCollision()) {
                 robot.setBusy(false);
             }
-            int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
+            
             if (!robot.isBusy()) {
                 int distance = targetRow - robot.getRobotWindowLocation().getRow();
                 if (collision) {
-                    robot.setTarget(90, distance);
-                    //localWindow.rotateWindow(90, robot.getRobotWindowLocation());
-                    localWindow.testFillWindow();
-                    localWindow.setOrientation(updateMapOrientation(90));
-                    localWindow.setOrientationChanged(true);
-                    collision = false;
+                    robot.setTarget(90, 0);
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    localWindow.testFillWindow();
+                    localWindow.setOrientation(updateMapOrientation(90));
+                    localWindow.setOrientationChanged(true);
                     //collision = checkCollision();
                 } else {
                     robot.setTarget(0, distance);
+                    robot.setBusy(true);
                 }
-                robot.setBusy(true);
             }
         }
     }
@@ -96,6 +93,7 @@ public class SlamNavigationController extends Thread {
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     e.printStackTrace();
+                    System.out.println("ArrayIndexOutOfBounds in checkCollision()");
                 }
                 
             }
