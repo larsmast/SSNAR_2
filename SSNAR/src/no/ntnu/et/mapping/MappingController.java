@@ -16,6 +16,7 @@ import no.ntnu.et.map.MapLocation;
 import no.ntnu.et.general.Angle;
 import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
+import no.ntnu.et.map.Cell;
 import no.ntnu.tem.robot.Robot;
 
 /**
@@ -32,6 +33,8 @@ public class MappingController extends Thread {
     private Object nameLock = new Object();
     private boolean paused;
     private Thread mapCleaner;
+    
+    private final boolean debug = true;
 
     /**
      * Constructor
@@ -110,6 +113,11 @@ public class MappingController extends Thread {
      */
     @Override
     public void run() {
+        
+        // For testing
+        int maxFrontierLocations = 0;
+        int maxOccupied = 0;
+        
         while (true) {
             try {
                 Thread.sleep(10);
@@ -169,6 +177,31 @@ public class MappingController extends Thread {
                     }
                 }
             }
+            
+            /*
+            if (debug) {
+                int frontierLocations = map.getFrontierLocations().size();
+                if (frontierLocations > maxFrontierLocations) {
+                    maxFrontierLocations = frontierLocations;
+                }
+                System.out.println("Max frontier locations: " + maxFrontierLocations);
+                
+                int cellCount = 0;
+                for (int i = map.getBottomRow(); i <= map.getTopRow(); i++) {
+                    for (int j = map.getLeftColumn(); j <= map.getRightColumn(); j++) {
+                        MapLocation location = new MapLocation(i, j);
+                        Cell cell = map.findCell(location);
+                        if (cell.isOccupied()) {
+                            cellCount++;
+                        }
+                    }
+                }
+                if (cellCount > maxOccupied) {
+                    maxOccupied = cellCount;
+                }
+                System.out.println("Max occupied locations: " + maxOccupied);
+            }
+            */
         }
     }
     

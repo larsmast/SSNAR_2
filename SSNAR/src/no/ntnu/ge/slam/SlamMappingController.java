@@ -32,6 +32,8 @@ public class SlamMappingController extends Thread {
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
     
+    private final boolean debug = false;
+    
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
         this.inbox = inbox;
@@ -113,9 +115,11 @@ public class SlamMappingController extends Thread {
                 }
             }
             
-            // Test
-            localWindow.addRobotWindowLocation(robotWindowLocation);
-            localWindow.print();
+            if (debug) {
+                // Test
+                localWindow.addRobotWindowLocation(robotWindowLocation);
+                localWindow.print();
+            }
         }
     }
     

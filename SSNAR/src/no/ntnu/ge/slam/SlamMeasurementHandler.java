@@ -30,6 +30,8 @@ class SlamMeasurementHandler {
     private Sensor[] sensors;
     private SlamRobot robot;
     
+    private final boolean debug = true;
+    
     /**
      * Constructor for class SlamMeasurementHandler
      * 
