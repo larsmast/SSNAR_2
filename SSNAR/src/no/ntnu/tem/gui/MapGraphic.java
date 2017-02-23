@@ -168,25 +168,7 @@ public class MapGraphic extends JPanel {
             g2D.setPaint(robotColor);
             g2D.drawString("X", getWidth() - destx, desty);
             g2D.setTransform(temp);
-            
-            paintSquare(g2D, posx, posy);
         }
-    }
-    
-    /**
-     * Paints the area that is included in the windowMap of a simulated SlamRobot.
-     * 
-     * @param g2D The Graphics 2D object
-     * @param posX robot position x coordinate
-     * @param posY robot position y coordinate
-     */
-    private void paintSquare(Graphics2D g2D, int posX, int posY) {
-        int height = 100;
-        int width = 100;
-        int topLeftCornerY = posY - height/2;
-        int topLeftCornerX = posX - width/2;
-        g2D.setColor(Color.red);
-        g2D.drawRect(topLeftCornerX, topLeftCornerY, width, height);
     }
 
     /**
