@@ -28,6 +28,7 @@ public class SlamRobot extends SimRobot {
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
     private int[] irHeading;
+    private int lineOfSight = 40; //cm
     private MapLocation windowStartLocation;
     private MapLocation robotWindowLocation;
     private MapLocation globalStartLocation;
@@ -51,6 +52,10 @@ public class SlamRobot extends SimRobot {
         for (int i = 0; i < super.getLastIrMeasurement().length; i++) {
             irHeading[i] = ((int) super.getTowerAngle().getValue() + irSensors.getSpreading()[i]) % 360;
         }
+    }
+    
+    public int getLineOfSight() {
+        return lineOfSight;
     }
     
     public MapLocation getWindowStartLocation() {

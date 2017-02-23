@@ -15,17 +15,25 @@ import no.ntnu.et.simulator.SlamRobot;
  */
 public class SlamNavigationController extends Thread {
     private boolean paused = false;
-    SlamRobot robot;
+    private SlamRobot robot;
     //int[] command;
-    WindowMap localWindow;
-    boolean collision = false;
-    int[][] windowArray;
+    private WindowMap localWindow;
+    private boolean collision = false;
+    private int[][] windowArray;
+    private int frontDistance;
+    private int leftDistance;
+    private int rightDistance;
+    private final int cellSize = 2;
+    private final int distanceLimit = 10; //map cells
     
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
         //command = new int[] {0, 0};
         localWindow = robot.getWindowMap();
         windowArray = localWindow.getWindow();
+        frontDistance = robot.getLineOfSight();
+        leftDistance = frontDistance;
+        rightDistance = frontDistance;
     }
     
     @Override
@@ -56,14 +64,67 @@ public class SlamNavigationController extends Thread {
             }
             
             moveForward();
-            
+            if (!robot.isBusy()) {
+                checkSurroundings();
+            }
             
         }
+    }
+    
+    private void checkSurroundings() {
+        frontDistance = getFrontDistance();
+        if (frontDistance < distanceLimit) {
+            moveStop();
+        }
+        leftDistance = getLeftDistance();
+        if (leftDistance < distanceLimit) {
+            moveStop();
+        }
+        rightDistance = getRightDistance();
+        if (rightDistance < distanceLimit) {
+            moveStop();
+        }
+        
+        System.out.println("Check surroundings done");
+    }
+    
+    private int getFrontDistance() {
+        int robotColumn = robot.getRobotWindowLocation().getColumn();
+        int robotRow = robot.getRobotWindowLocation().getRow();
+        for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
+            if (localWindow.getWindow()[robotRow+i][robotColumn] == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    private int getLeftDistance() {
+        int robotColumn = robot.getRobotWindowLocation().getColumn();
+        int robotRow = robot.getRobotWindowLocation().getRow();
+        for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
+            if (localWindow.getWindow()[robotRow][robotColumn-i] == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    private int getRightDistance() {
+        int robotColumn = robot.getRobotWindowLocation().getColumn();
+        int robotRow = robot.getRobotWindowLocation().getRow();
+        for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
+            if (localWindow.getWindow()[robotRow][robotColumn+i] == 1) {
+                return i;
+            }
+        }
+        return -1;
     }
     
     private void moveForward() {
         // move as far as it can currently see ahead
         robot.setTarget(0, robot.getMaxSensorDistance());
+        robot.setBusy(true);
         System.out.println("Moving forward");
     }
     
@@ -148,16 +209,5 @@ public class SlamNavigationController extends Thread {
         }
         return newOrientation;
     }
-    
-    /*
-    private int findRotation(int offset, int currentOrientation, int newOrientation) {
-        int difference = newOrientation - currentOrientation;
-        if (difference >= 0) {
-            return difference - offset;
-        } else if (difference < 0) {
-            return difference + offset;
-        }
-    }
-    */
 
 }
