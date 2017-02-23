@@ -43,6 +43,7 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
+        moveStop();
         while (true) {
             try {
                 Thread.sleep(100); // was 5000
@@ -54,29 +55,21 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            if (collision = checkCollision()) {
-                robot.setBusy(false);
-            }
+            moveForward();
             
-            if (!robot.isBusy()) {
-                int distance = getNewDistance();
-                if (collision) {
-                    robot.setTarget(90, 0);
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    localWindow.testFillWindow();
-                    localWindow.setOrientation(updateMapOrientation(90));
-                    localWindow.setOrientationChanged(true);
-                    //collision = checkCollision();
-                } else {
-                    robot.setTarget(0, distance);
-                    robot.setBusy(true);
-                }
-            }
+            
         }
+    }
+    
+    private void moveForward() {
+        // move as far as it can currently see ahead
+        robot.setTarget(0, robot.getMaxSensorDistance());
+        System.out.println("Moving forward");
+    }
+    
+    private void moveStop() {
+        robot.setTarget(0, 0);
+        System.out.println("Stopping");
     }
     
     private int getNewDistance() {
