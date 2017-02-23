@@ -43,7 +43,6 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
-        int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
         while (true) {
             try {
                 Thread.sleep(100); // was 5000
@@ -60,7 +59,7 @@ public class SlamNavigationController extends Thread {
             }
             
             if (!robot.isBusy()) {
-                int distance = targetRow - robot.getRobotWindowLocation().getRow();
+                int distance = getNewDistance();
                 if (collision) {
                     robot.setTarget(90, 0);
                     try {
@@ -78,6 +77,12 @@ public class SlamNavigationController extends Thread {
                 }
             }
         }
+    }
+    
+    private int getNewDistance() {
+        int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
+        int distance = targetRow - robot.getRobotWindowLocation().getRow();
+        return distance;
     }
     
     private boolean checkCollision() {
