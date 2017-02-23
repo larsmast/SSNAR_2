@@ -353,8 +353,9 @@ public class Simulator {
                         sensorNoise = 0;
                     }
                     myRobot.measureIR(sensorNoise);
+                    myRobot.updateIrHeading();
                     int[] update = myRobot.createMeasurement();
-                    myRobot.addUpdate(update); // add update to updateQueue
+                    myRobot.addUpdate(update); // add update to updateQueue -> SlamMappingController
                     String updateMsg = BasicRobot.generateUpdate(update[0], update[1], update[2], update[3], update[4], update[5], update[6], update[7]);
                     String dongleSim = "[" + myID + "]:" + myName + ":";
                     inbox.putMessage(dongleSim + updateMsg);

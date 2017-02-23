@@ -13,6 +13,7 @@ import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.map.MapLocation;
 import no.ntnu.ge.slam.WindowMap;
+import no.ntnu.tem.robot.IR;
 
 /**
  *
@@ -26,6 +27,7 @@ public class SlamRobot extends SimRobot {
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
+    private int[] irHeading;
     private MapLocation windowStartLocation;
     private MapLocation robotWindowLocation;
     private MapLocation globalStartLocation;
@@ -35,11 +37,20 @@ public class SlamRobot extends SimRobot {
         super(world, initialPose, name, id);
         windowMap = new WindowMap(windowHeight, windowWidth, (int) initialPose.getHeading().getValue());
         updateQueue = new LinkedBlockingQueue<>(5);
+        irHeading = new int[super.getLastIrMeasurement().length];
         windowStartLocation = new MapLocation(24, 24);
         robotWindowLocation = MapLocation.copy(windowStartLocation);
         //globalStartLocation = new MapLocation((int) initialPose.getPosition().getYValue(), (int) initialPose.getPosition().getXValue());
         //globalRobotLocation = MapLocation.copy(globalStartLocation);
         
+    }
+    
+    void updateIrHeading() {
+        int[] sensors = {0, 90, 180, 270};
+        IR irSensors = new IR(sensors);
+        for (int i = 0; i < super.getLastIrMeasurement().length; i++) {
+            irHeading[i] = ((int) super.getTowerAngle().getValue() + irSensors.getSpreading()[i]) % 360;
+        }
     }
     
     public MapLocation getWindowStartLocation() {

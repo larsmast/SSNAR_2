@@ -68,12 +68,16 @@ abstract public class SimRobot {
         return (int) pose.getHeading().getValue();
     }
     
-    double getMaxSensorDistance(){
+    public double getMaxSensorDistance(){
         return maxVisualLength;
     }
     
     Angle getTowerAngle() {
         return towerAngle;
+    }
+    
+    double[] getLastIrMeasurement() {
+        return lastIrMeasurement;
     }
     
     /**
