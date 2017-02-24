@@ -15,9 +15,10 @@ import no.ntnu.et.simulator.SlamRobot;
  */
 public class SlamNavigationController extends Thread {
     private boolean paused = false;
+    private boolean debug = true;
     private SlamRobot robot;
     //int[] command;
-    private WindowMap localWindow;
+    private WindowMap localMap;
     private boolean collision = false;
     private int[][] windowArray;
     private int frontDistance;
@@ -25,12 +26,17 @@ public class SlamNavigationController extends Thread {
     private int rightDistance;
     private final int cellSize = 2;
     private final int distanceLimit = 10; //map cells
+    private final int sideDistanceLimit = distanceLimit;
+    
+    private enum Direction {
+        FORWARD, LEFT, RIGHT, BACKWARDS
+    }
     
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
         //command = new int[] {0, 0};
-        localWindow = robot.getWindowMap();
-        windowArray = localWindow.getWindow();
+        localMap = robot.getWindowMap();
+        windowArray = localMap.getWindow();
         frontDistance = robot.getLineOfSight();
         leftDistance = frontDistance;
         rightDistance = frontDistance;
@@ -63,11 +69,56 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            moveForward();
             if (!robot.isBusy()) {
-                checkSurroundings();
+                moveForward();
             }
-            
+            checkSurroundings();
+            if (leftDistance < sideDistanceLimit) {
+                turnRight();
+                while (!robot.isRotationFinished()) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {}
+                }
+            }
+            if (rightDistance < sideDistanceLimit) {
+                turnLeft();
+                while (!robot.isRotationFinished()) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {}
+                }
+            }
+            /*
+            Include more functionality, include decideDirection()
+            Should there be a limit to how far the robot drives before it
+            needs to make a new decision?
+            */
+        }
+    }
+    
+    private Direction decideDirection() {
+        checkSurroundings();
+        if (leftDistance > rightDistance && leftDistance > frontDistance) {
+            if (debug) {
+                System.out.println("Direction decision: LEFT");
+            }
+            return Direction.LEFT;
+        } else if (rightDistance > leftDistance && rightDistance > frontDistance) {
+            if (debug) {
+                System.out.println("Direction decision: RIGHT");
+            }
+            return Direction.RIGHT;
+        } else if (leftDistance < sideDistanceLimit && rightDistance < sideDistanceLimit && frontDistance < distanceLimit) {
+            if (debug) {
+                System.out.println("Direction decision: BACKWARDS");
+            }
+            return Direction.BACKWARDS;
+        } else {
+            if (debug) {
+                System.out.println("Direction decision: FORWARD");
+            }
+            return Direction.FORWARD;
         }
     }
     
@@ -77,22 +128,23 @@ public class SlamNavigationController extends Thread {
             moveStop();
         }
         leftDistance = getLeftDistance();
-        if (leftDistance < distanceLimit) {
+        if (leftDistance < sideDistanceLimit) {
             moveStop();
         }
         rightDistance = getRightDistance();
-        if (rightDistance < distanceLimit) {
+        if (rightDistance < sideDistanceLimit) {
             moveStop();
         }
-        
-        System.out.println("Check surroundings done");
+        if (debug) {
+            System.out.println("Check surroundings done");
+        }
     }
     
     private int getFrontDistance() {
         int robotColumn = robot.getRobotWindowLocation().getColumn();
         int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localWindow.getWindow()[robotRow+i][robotColumn] == 1) {
+            if (localMap.getWindow()[robotRow+i][robotColumn] == 1) {
                 return i;
             }
         }
@@ -103,7 +155,7 @@ public class SlamNavigationController extends Thread {
         int robotColumn = robot.getRobotWindowLocation().getColumn();
         int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localWindow.getWindow()[robotRow][robotColumn-i] == 1) {
+            if (localMap.getWindow()[robotRow][robotColumn-i] == 1) {
                 return i;
             }
         }
@@ -114,7 +166,7 @@ public class SlamNavigationController extends Thread {
         int robotColumn = robot.getRobotWindowLocation().getColumn();
         int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localWindow.getWindow()[robotRow][robotColumn+i] == 1) {
+            if (localMap.getWindow()[robotRow][robotColumn+i] == 1) {
                 return i;
             }
         }
@@ -122,19 +174,40 @@ public class SlamNavigationController extends Thread {
     }
     
     private void moveForward() {
-        // move as far as it can currently see ahead
-        robot.setTarget(0, robot.getMaxSensorDistance());
+        // move forward until stopped elsewhere
+        robot.setTarget(0, 1000);
         robot.setBusy(true);
-        System.out.println("Moving forward");
+        if (debug) {
+            System.out.println("Moving forward");
+        }
+    }
+    
+    private void turnLeft() {
+        robot.setTarget(90, 0);
+        robot.setBusy(true);
+        if (debug) {
+            System.out.println("Turning left");
+        }
+    }
+    
+    private void turnRight() {
+        robot.setTarget(-90, 0);
+        robot.setBusy(true);
+        if (debug) {
+            System.out.println("Turning right");
+        }
     }
     
     private void moveStop() {
         robot.setTarget(0, 0);
-        System.out.println("Stopping");
+        robot.setBusy(false);
+        if (debug) {
+            System.out.println("Stopping");
+        }
     }
     
     private int getNewDistance() {
-        int targetRow = localWindow.getHeight() - localWindow.getHeight()/4 - 1;
+        int targetRow = localMap.getHeight() - localMap.getHeight()/4 - 1;
         int distance = targetRow - robot.getRobotWindowLocation().getRow();
         return distance;
     }
@@ -200,7 +273,7 @@ public class SlamNavigationController extends Thread {
     }
     
     private int updateMapOrientation(int turnAngle) {
-        int currentOrientation = localWindow.getOrientation();
+        int currentOrientation = localMap.getOrientation();
         int newOrientation = currentOrientation + turnAngle;
         if (newOrientation < 0) {
             newOrientation += 360;

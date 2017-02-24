@@ -142,6 +142,10 @@ abstract public class SimRobot {
         return targetPosition;
     }
     
+    public boolean isRotationFinished() {
+        return rotationFinished;
+    }
+    
     /**
      * Turns the tower 5 degrees within a 90 degree angle.
      */

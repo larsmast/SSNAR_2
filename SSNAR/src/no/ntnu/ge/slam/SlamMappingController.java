@@ -117,8 +117,8 @@ public class SlamMappingController extends Thread {
             
             if (debug) {
                 // Test
-                localWindow.addRobotWindowLocation(robotWindowLocation);
-                localWindow.print();
+                //localWindow.addRobotWindowLocation(robotWindowLocation);
+                //localWindow.print();
             }
         }
     }
