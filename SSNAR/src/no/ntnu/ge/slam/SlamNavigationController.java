@@ -25,8 +25,8 @@ public class SlamNavigationController extends Thread {
     private int leftDistance;
     private int rightDistance;
     private final int cellSize = 2;
-    private final int distanceLimit = 10; //map cells
-    private final int sideDistanceLimit = distanceLimit;
+    private final int frontDistanceLimit = 10; //map cells
+    private final int sideDistanceLimit = frontDistanceLimit;
     
     
     private enum Direction {
@@ -38,7 +38,7 @@ public class SlamNavigationController extends Thread {
         //command = new int[] {0, 0};
         localMap = robot.getWindowMap();
         windowArray = localMap.getWindow();
-        frontDistance = robot.getLineOfSight();
+        frontDistance = robot.getLineOfSight()/cellSize;
         leftDistance = frontDistance;
         rightDistance = frontDistance;
     }
@@ -58,6 +58,7 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
+        int numcycles = 0;
         moveStop();
         while (true) {
             try {
@@ -73,21 +74,44 @@ public class SlamNavigationController extends Thread {
             if (!robot.isBusy()) {
                 moveForward();
             }
-            checkSurroundings();
-            if (leftDistance < sideDistanceLimit) {
-                turnRight();
-                while (!robot.isRotationFinished()) {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {}
+            ++numcycles;
+            if (numcycles > 40) {
+                checkSurroundings();
+                if (leftDistance < sideDistanceLimit) {
+                    turnRight();
+                    while (!robot.isRotationFinished()) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {}
+                    }
                 }
+                if (rightDistance < sideDistanceLimit) {
+                    turnLeft();
+                    while (!robot.isRotationFinished()) {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {}
+                    }
+                }
+                numcycles = 0;
             }
-            if (rightDistance < sideDistanceLimit) {
-                turnLeft();
-                while (!robot.isRotationFinished()) {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {}
+            
+            if (getFrontDistance() < frontDistanceLimit) {
+                moveStop();
+                Direction turnDirection = decideDirection();
+                switch (turnDirection) {
+                    case LEFT:
+                        turnLeft();
+                        //delay?
+                        break;
+                    case RIGHT:
+                        turnRight();
+                        break;
+                    case BACKWARDS:
+                        //
+                        break;
+                    case FORWARD:
+                        break;
                 }
             }
             /*
@@ -110,7 +134,7 @@ public class SlamNavigationController extends Thread {
                 System.out.println("Direction decision: RIGHT");
             }
             return Direction.RIGHT;
-        } else if (leftDistance < sideDistanceLimit && rightDistance < sideDistanceLimit && frontDistance < distanceLimit) {
+        } else if (leftDistance < sideDistanceLimit && rightDistance < sideDistanceLimit && frontDistance < frontDistanceLimit) {
             if (debug) {
                 System.out.println("Direction decision: BACKWARDS");
             }
@@ -125,7 +149,7 @@ public class SlamNavigationController extends Thread {
     
     private void checkSurroundings() {
         frontDistance = getFrontDistance();
-        if (frontDistance < distanceLimit) {
+        if (frontDistance < frontDistanceLimit) {
             moveStop();
         }
         leftDistance = getLeftDistance();
@@ -147,7 +171,7 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return -1;
+        return robot.getLineOfSight();
     }
     
     private int getLeftDistance() {
@@ -156,7 +180,7 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return -1;
+        return robot.getLineOfSight();
     }
     
     private int getRightDistance() {
@@ -165,7 +189,7 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return -1;
+        return robot.getLineOfSight();
     }
     
     private void moveForward() {

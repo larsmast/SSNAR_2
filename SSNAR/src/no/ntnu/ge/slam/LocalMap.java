@@ -261,7 +261,7 @@ public class LocalMap {
                 if (measurement) {
                     map[row][col] = 1; //occupied
                     //addRestrictingCells(location);
-                    System.out.println("Row: " + row + ", Col: " + col);
+                    //System.out.println("Row: " + row + ", Col: " + col);
                 } else {
                     if (map[row][col] == 1) {
                         //removeRestrictingCells(location);

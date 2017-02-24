@@ -32,7 +32,7 @@ public class SlamMappingController extends Thread {
     private LinkedBlockingQueue<int[]> updateQueue;
     private SlamMeasurementHandler measurementHandler;
     
-    private final boolean debug = true;
+    private final boolean debug = false;
     
     public SlamMappingController(SlamRobot robot, Inbox inbox) {
         this.robot = robot;
