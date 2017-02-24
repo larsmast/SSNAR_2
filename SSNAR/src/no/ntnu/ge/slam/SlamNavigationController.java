@@ -6,6 +6,8 @@
  */
 package no.ntnu.ge.slam;
 
+import static java.lang.Math.round;
+import static java.lang.Math.sqrt;
 import static no.ntnu.et.map.MapLocation.getOctant;
 import no.ntnu.et.simulator.SlamRobot;
 
@@ -24,8 +26,10 @@ public class SlamNavigationController extends Thread {
     private int frontDistance;
     private int leftDistance;
     private int rightDistance;
+    private int leftDiagonalDistance;
+    private int rightDiagonalDistance;
     private final int cellSize = 2;
-    private final int frontDistanceLimit = 10; //map cells
+    private final int frontDistanceLimit = 20; //map cells
     private final int sideDistanceLimit = frontDistanceLimit;
     
     
@@ -41,6 +45,9 @@ public class SlamNavigationController extends Thread {
         frontDistance = robot.getLineOfSight()/cellSize;
         leftDistance = frontDistance;
         rightDistance = frontDistance;
+        leftDiagonalDistance = frontDistance;
+        rightDiagonalDistance = frontDistance;
+        
     }
     
     @Override
@@ -58,7 +65,7 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
-        int numcycles = 0;
+        int numcycles = 40; //hack
         moveStop();
         while (true) {
             try {
@@ -74,10 +81,10 @@ public class SlamNavigationController extends Thread {
             if (!robot.isBusy()) {
                 moveForward();
             }
-            ++numcycles;
+            //++numcycles;
             if (numcycles > 40) {
                 checkSurroundings();
-                if (leftDistance < sideDistanceLimit) {
+                if (leftDistance < sideDistanceLimit || leftDiagonalDistance < sideDistanceLimit) {
                     turnRight();
                     while (!robot.isRotationFinished()) {
                         try {
@@ -96,16 +103,26 @@ public class SlamNavigationController extends Thread {
                 numcycles = 0;
             }
             
+            /*
             if (getFrontDistance() < frontDistanceLimit) {
                 moveStop();
                 Direction turnDirection = decideDirection();
                 switch (turnDirection) {
                     case LEFT:
                         turnLeft();
-                        //delay?
+                        while (!robot.isRotationFinished()) {
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {}
+                        }
                         break;
                     case RIGHT:
                         turnRight();
+                        while (!robot.isRotationFinished()) {
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {}
+                        }
                         break;
                     case BACKWARDS:
                         //
@@ -114,6 +131,7 @@ public class SlamNavigationController extends Thread {
                         break;
                 }
             }
+            */
             /*
             Include more functionality, include decideDirection()
             Should there be a limit to how far the robot drives before it
@@ -152,6 +170,10 @@ public class SlamNavigationController extends Thread {
         if (frontDistance < frontDistanceLimit) {
             moveStop();
         }
+        leftDiagonalDistance = getLeftDiagonalDistance();
+        if (leftDiagonalDistance < frontDistanceLimit) {
+            moveStop();
+        }
         leftDistance = getLeftDistance();
         if (leftDistance < sideDistanceLimit) {
             moveStop();
@@ -171,7 +193,7 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return robot.getLineOfSight();
+        return robot.getLineOfSight()/2;
     }
     
     private int getLeftDistance() {
@@ -180,7 +202,7 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return robot.getLineOfSight();
+        return robot.getLineOfSight()/2;
     }
     
     private int getRightDistance() {
@@ -189,7 +211,17 @@ public class SlamNavigationController extends Thread {
                 return i;
             }
         }
-        return robot.getLineOfSight();
+        return robot.getLineOfSight()/2;
+    }
+    
+    private int getLeftDiagonalDistance() {
+        int horizontalCells = (int) (1/sqrt(2)*(robot.getLineOfSight()/cellSize));
+        for (int i = 1; i < horizontalCells; i++) {
+            if (localMap.getWindow()[localMap.getCenterRow()+i][localMap.getCenterColumn()-i] == 1) {
+                return (int) (sqrt(2)*i);
+            }
+        }
+        return robot.getLineOfSight()/2;
     }
     
     private void moveForward() {
