@@ -17,7 +17,7 @@ import no.ntnu.et.map.MapLocation;
  * 
  * @author geirhei
  */
-public class WindowMap {
+public class LocalMap {
     private int[][] map;
     private final int height;
     private final int width;
@@ -25,8 +25,10 @@ public class WindowMap {
     private int globalStartRow = 0;
     private int globalStartColumn = 0;
     private final int cellSize = 2;
-    private int orientation;
     private boolean orientationChanged = false;
+    private final int centerRow = 24;
+    private final int centerColumn = centerRow;
+    private final MapLocation centerLocation = new MapLocation(centerRow, centerColumn);
     
     /**
      * Constructor
@@ -35,16 +37,27 @@ public class WindowMap {
      * @param width
      * @param orientation
      */
-    public WindowMap(int height, int width, int orientation) {
+    public LocalMap(int height, int width) {
         this.height = height;
         this.width = width;
         map = new int[this.height][this.width];
-        this.orientation = orientation;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 map[i][j] = 2; // unexplored
             }
         }
+    }
+    
+    MapLocation getCenterLocation() {
+        return centerLocation;
+    }
+    
+    int getCenterRow() {
+        return centerRow;
+    }
+    
+    int getCenterColumn() {
+        return centerColumn;
     }
     
     boolean getOrientationChanged() {
@@ -53,16 +66,6 @@ public class WindowMap {
     
     void setOrientationChanged(boolean changed) {
         orientationChanged = changed;
-    }
-    
-    public int getOrientation() {
-        return orientation;
-    }
-    
-    void setOrientation(int angle) {
-        synchronized (mapLock) {
-            orientation = angle;
-        }
     }
     
     int getGlobalStartRow() {

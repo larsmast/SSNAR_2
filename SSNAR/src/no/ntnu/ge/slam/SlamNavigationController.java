@@ -18,7 +18,7 @@ public class SlamNavigationController extends Thread {
     private boolean debug = true;
     private SlamRobot robot;
     //int[] command;
-    private WindowMap localMap;
+    private LocalMap localMap;
     private boolean collision = false;
     private int[][] windowArray;
     private int frontDistance;
@@ -27,6 +27,7 @@ public class SlamNavigationController extends Thread {
     private final int cellSize = 2;
     private final int distanceLimit = 10; //map cells
     private final int sideDistanceLimit = distanceLimit;
+    
     
     private enum Direction {
         FORWARD, LEFT, RIGHT, BACKWARDS
@@ -141,10 +142,8 @@ public class SlamNavigationController extends Thread {
     }
     
     private int getFrontDistance() {
-        int robotColumn = robot.getRobotWindowLocation().getColumn();
-        int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localMap.getWindow()[robotRow+i][robotColumn] == 1) {
+            if (localMap.getWindow()[localMap.getCenterRow()+i][localMap.getCenterColumn()] == 1) {
                 return i;
             }
         }
@@ -152,10 +151,8 @@ public class SlamNavigationController extends Thread {
     }
     
     private int getLeftDistance() {
-        int robotColumn = robot.getRobotWindowLocation().getColumn();
-        int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localMap.getWindow()[robotRow][robotColumn-i] == 1) {
+            if (localMap.getWindow()[localMap.getCenterRow()][localMap.getCenterColumn()-i] == 1) {
                 return i;
             }
         }
@@ -163,10 +160,8 @@ public class SlamNavigationController extends Thread {
     }
     
     private int getRightDistance() {
-        int robotColumn = robot.getRobotWindowLocation().getColumn();
-        int robotRow = robot.getRobotWindowLocation().getRow();
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
-            if (localMap.getWindow()[robotRow][robotColumn+i] == 1) {
+            if (localMap.getWindow()[localMap.getCenterRow()][localMap.getCenterColumn()+i] == 1) {
                 return i;
             }
         }
@@ -206,12 +201,15 @@ public class SlamNavigationController extends Thread {
         }
     }
     
+    /*
     private int getNewDistance() {
         int targetRow = localMap.getHeight() - localMap.getHeight()/4 - 1;
         int distance = targetRow - robot.getRobotWindowLocation().getRow();
         return distance;
     }
+    */
     
+    /*
     private boolean checkCollision() {
         int robotRow = robot.getRobotWindowLocation().getRow();
         int robotColumn = robot.getRobotWindowLocation().getColumn();
@@ -232,6 +230,7 @@ public class SlamNavigationController extends Thread {
         }
         return false;
     }
+    */
     
     
     private void changeDirection() {
@@ -264,6 +263,7 @@ public class SlamNavigationController extends Thread {
         }
     }
     
+    /*
     private int getNewOrientation(int currentOrientation, int turnDirection) {
         if (currentOrientation == 270 && turnDirection == 1) {
             return 0;
@@ -273,7 +273,7 @@ public class SlamNavigationController extends Thread {
     }
     
     private int updateMapOrientation(int turnAngle) {
-        int currentOrientation = localMap.getOrientation();
+        int currentOrientation = LocalMap.getOrientation();
         int newOrientation = currentOrientation + turnAngle;
         if (newOrientation < 0) {
             newOrientation += 360;
@@ -282,5 +282,5 @@ public class SlamNavigationController extends Thread {
         }
         return newOrientation;
     }
-
+    */
 }

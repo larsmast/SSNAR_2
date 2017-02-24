@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import no.ntnu.et.general.Pose;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.map.MapLocation;
-import no.ntnu.ge.slam.WindowMap;
+import no.ntnu.ge.slam.LocalMap;
 import no.ntnu.tem.robot.IR;
 
 /**
@@ -20,30 +20,25 @@ import no.ntnu.tem.robot.IR;
  * @author geirhei
  */
 public class SlamRobot extends SimRobot {
-    private final int windowHeight = 100;
+    private final int windowHeight = 50;
     private final int windowWidth = 50;
-    private WindowMap windowMap;
+    private LocalMap localMap;
     private LinkedBlockingQueue<int[]> updateQueue;
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
     private boolean inWallCollision = false;
     private int[] irHeading;
     private int lineOfSight = 40; //cm
-    private MapLocation windowStartLocation;
-    private MapLocation robotWindowLocation;
-    private MapLocation globalStartLocation;
     private MapLocation globalRobotLocation;
+    private MapLocation localRobotLocation;
     
     SlamRobot(SimWorld world, Pose initialPose, String name, int id) {
         super(world, initialPose, name, id);
-        windowMap = new WindowMap(windowHeight, windowWidth, (int) initialPose.getHeading().getValue());
+        localMap = new LocalMap(windowHeight, windowWidth);
         updateQueue = new LinkedBlockingQueue<>(5);
         irHeading = new int[super.getLastIrMeasurement().length];
-        windowStartLocation = new MapLocation(24, 24);
-        robotWindowLocation = MapLocation.copy(windowStartLocation);
-        //globalStartLocation = new MapLocation((int) initialPose.getPosition().getYValue(), (int) initialPose.getPosition().getXValue());
-        //globalRobotLocation = MapLocation.copy(globalStartLocation);
-        
+        globalRobotLocation = new MapLocation((int) initialPose.getPosition().getYValue(), (int) initialPose.getPosition().getXValue());
+        localRobotLocation = new MapLocation(windowHeight/2-1, windowWidth/2-1);
     }
     
     void updateIrHeading() {
@@ -58,28 +53,16 @@ public class SlamRobot extends SimRobot {
         return lineOfSight;
     }
     
-    public MapLocation getWindowStartLocation() {
-        return windowStartLocation;
-    }
-    
-    public void setGlobalStartLocation(MapLocation location) {
-        globalStartLocation = location;
-    }
-    
-    public MapLocation getGlobalStartLocation() {
-        return globalStartLocation;
+    public MapLocation getGlobalRobotLocation() {
+        return globalRobotLocation;
     }
     
     public void setGlobalRobotLocation(MapLocation location) {
         globalRobotLocation = location;
     }
     
-    public MapLocation getRobotWindowLocation() {
-        return robotWindowLocation;
-    }
-    
-    public void setRobotWindowLocation(MapLocation location) {
-        robotWindowLocation = location;
+    public MapLocation getLocalRobotLocation() {
+        return localRobotLocation;
     }
     
     /*
@@ -92,8 +75,8 @@ public class SlamRobot extends SimRobot {
     }
     */
     
-    public WindowMap getWindowMap() {
-        return windowMap;
+    public LocalMap getWindowMap() {
+        return localMap;
     }
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
