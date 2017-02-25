@@ -71,7 +71,7 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
-        int numcycles = 40; //hack
+        int numcycles = 41; //hack
         moveStop();
         while (true) {
             try {
@@ -106,7 +106,7 @@ public class SlamNavigationController extends Thread {
                         } catch (InterruptedException e) {}
                     }
                 }
-                numcycles = 0;
+                //numcycles = 0;
             }
             
             
@@ -167,19 +167,22 @@ public class SlamNavigationController extends Thread {
     }
     
     private void checkSurroundings() {
-        frontDistance = getFrontDistance();
+        findDistances();
+        //frontDistance = getFrontDistance();
         if (frontDistance < frontDistanceLimit) {
             moveStop();
         }
+        /*
         leftDiagonalDistance = getLeftDiagonalDistance();
         if (leftDiagonalDistance < frontDistanceLimit) {
             moveStop();
         }
-        leftDistance = getLeftDistance();
+        */
+        //leftDistance = getLeftDistance();
         if (leftDistance < sideDistanceLimit) {
             moveStop();
         }
-        rightDistance = getRightDistance();
+        //rightDistance = getRightDistance();
         if (rightDistance < sideDistanceLimit) {
             moveStop();
         }
@@ -202,12 +205,14 @@ public class SlamNavigationController extends Thread {
     private void findDistances() {
         Angle lineOfSightAngle = Angle.sum(robot.getPose().getHeading(), new Angle(-90));
         for (int i = 0; i < 3; i++) { //left, forward, right
+            distances[i] = robot.getLineOfSight()/cellSize; // reset
             if (i > 0) {
                 lineOfSightAngle.add(90);
             }
             Position offset = Utilities.polar2cart(lineOfSightAngle, robot.getLineOfSight());
             MapLocation mapOffset = new MapLocation((int) offset.getYValue()/cellSize, (int) offset.getXValue()/cellSize);
-            ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robot.getLocalRobotLocation(), mapOffset);
+            MapLocation lineOfSightEnd = MapLocation.sum(robot.getLocalRobotLocation(), mapOffset);
+            ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robot.getLocalRobotLocation(), lineOfSightEnd);
             for (int j = 0; j < lineOfSight.size(); j++) {
                 MapLocation currentLocation = lineOfSight.get(j);
                 int currentRow = currentLocation.getRow();
@@ -216,9 +221,17 @@ public class SlamNavigationController extends Thread {
                     int distance = (int) MapLocation.distance(robot.getLocalRobotLocation(), currentLocation);
                     distances[i] = distance;
                     break;
-                }
-                
+                }   
             }
+        }
+        
+        rightDistance = distances[0];
+        frontDistance = distances[1];
+        leftDistance = distances[2];
+        
+        if (debug) {
+            System.out.println("Front distance: " + frontDistance);
+            System.out.println("Find distances done");
         }
     }
     
