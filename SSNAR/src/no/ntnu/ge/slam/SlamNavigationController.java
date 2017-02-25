@@ -19,7 +19,6 @@ public class SlamNavigationController extends Thread {
     private boolean paused = false;
     private boolean debug = true;
     private SlamRobot robot;
-    //int[] command;
     private LocalMap localMap;
     private boolean collision = false;
     private int[][] windowArray;
@@ -39,7 +38,6 @@ public class SlamNavigationController extends Thread {
     
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
-        //command = new int[] {0, 0};
         localMap = robot.getWindowMap();
         windowArray = localMap.getWindow();
         frontDistance = robot.getLineOfSight()/cellSize;
@@ -103,8 +101,8 @@ public class SlamNavigationController extends Thread {
                 numcycles = 0;
             }
             
-            /*
-            if (getFrontDistance() < frontDistanceLimit) {
+            
+            if (frontDistance < frontDistanceLimit) {
                 moveStop();
                 Direction turnDirection = decideDirection();
                 switch (turnDirection) {
@@ -131,12 +129,7 @@ public class SlamNavigationController extends Thread {
                         break;
                 }
             }
-            */
-            /*
-            Include more functionality, include decideDirection()
-            Should there be a limit to how far the robot drives before it
-            needs to make a new decision?
-            */
+            
         }
     }
     
@@ -257,86 +250,8 @@ public class SlamNavigationController extends Thread {
         }
     }
     
-    /*
-    private int getNewDistance() {
-        int targetRow = localMap.getHeight() - localMap.getHeight()/4 - 1;
-        int distance = targetRow - robot.getRobotWindowLocation().getRow();
-        return distance;
-    }
-    */
-    
-    /*
-    private boolean checkCollision() {
-        int robotRow = robot.getRobotWindowLocation().getRow();
-        int robotColumn = robot.getRobotWindowLocation().getColumn();
-        int safeDistance = 10;
-        int frontRow = robotRow + safeDistance;
-        for (int i = 1; i < safeDistance+1; i++) {
-            for (int j = -safeDistance; j < safeDistance+1; j++) {
-                try {
-                    if (windowArray[robotRow+i][robotColumn+j] == 1) {
-                        return true;
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                    System.out.println("ArrayIndexOutOfBounds in checkCollision()");
-                }
-                
-            }
-        }
-        return false;
-    }
-    */
     
     
-    private void changeDirection() {
-        
-    }
     
-    private int[] findCommandToTarget(int rotation, int distance) {
-        int[] cmd = {rotation, distance};
-        return cmd;
-    }
     
-    private int correctOrientation(int orientation) {
-        int octant = getOctant(orientation);
-        switch (octant) {
-            case 0:
-            case 7:
-                return 0;
-            case 1:
-            case 2:
-                return 90;
-            case 3:
-            case 4:
-                return 180;
-            case 5:
-            case 6:
-                return 270;
-            default:
-                System.out.println("Invalid octant!");
-                return -1;
-        }
-    }
-    
-    /*
-    private int getNewOrientation(int currentOrientation, int turnDirection) {
-        if (currentOrientation == 270 && turnDirection == 1) {
-            return 0;
-        } else {
-            return (currentOrientation + 90*turnDirection);
-        }
-    }
-    
-    private int updateMapOrientation(int turnAngle) {
-        int currentOrientation = LocalMap.getOrientation();
-        int newOrientation = currentOrientation + turnAngle;
-        if (newOrientation < 0) {
-            newOrientation += 360;
-        } else if (newOrientation >= 360) {
-            newOrientation -= 360;
-        }
-        return newOrientation;
-    }
-    */
 }
