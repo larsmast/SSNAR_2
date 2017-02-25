@@ -122,7 +122,7 @@ abstract public class SimRobot {
      * Creates and returns a copy of the pose
      * @return 
      */
-    Pose getPose() {
+    public Pose getPose() {
         return pose;
     }
     

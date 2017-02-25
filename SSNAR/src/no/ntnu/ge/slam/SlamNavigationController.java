@@ -8,7 +8,14 @@ package no.ntnu.ge.slam;
 
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
+import java.util.ArrayList;
+import no.ntnu.et.general.Angle;
+import no.ntnu.et.general.Line;
+import no.ntnu.et.general.Position;
+import no.ntnu.et.general.Utilities;
+import no.ntnu.et.map.MapLocation;
 import static no.ntnu.et.map.MapLocation.getOctant;
+import static no.ntnu.et.mapping.MappingController.getLineBetweenPoints;
 import no.ntnu.et.simulator.SlamRobot;
 
 /**
@@ -27,6 +34,7 @@ public class SlamNavigationController extends Thread {
     private int rightDistance;
     private int leftDiagonalDistance;
     private int rightDiagonalDistance;
+    private int[] distances;
     private final int cellSize = 2;
     private final int frontDistanceLimit = 20; //map cells
     private final int sideDistanceLimit = frontDistanceLimit;
@@ -45,7 +53,7 @@ public class SlamNavigationController extends Thread {
         rightDistance = frontDistance;
         leftDiagonalDistance = frontDistance;
         rightDiagonalDistance = frontDistance;
-        
+        distances = new int[3];
     }
     
     @Override
@@ -180,6 +188,7 @@ public class SlamNavigationController extends Thread {
         }
     }
     
+    
     private int getFrontDistance() {
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
             if (localMap.getWindow()[localMap.getCenterRow()+i][localMap.getCenterColumn()] == 1) {
@@ -188,6 +197,43 @@ public class SlamNavigationController extends Thread {
         }
         return robot.getLineOfSight()/2;
     }
+    
+    
+    private void findDistances() {
+        Angle lineOfSightAngle = Angle.sum(robot.getPose().getHeading(), new Angle(-90));
+        for (int i = 0; i < 3; i++) { //left, forward, right
+            if (i > 0) {
+                lineOfSightAngle.add(90);
+            }
+            Position offset = Utilities.polar2cart(lineOfSightAngle, robot.getLineOfSight());
+            MapLocation mapOffset = new MapLocation((int) offset.getYValue()/cellSize, (int) offset.getXValue()/cellSize);
+            ArrayList<MapLocation> lineOfSight = getLineBetweenPoints(robot.getLocalRobotLocation(), mapOffset);
+            for (int j = 0; j < lineOfSight.size(); j++) {
+                MapLocation currentLocation = lineOfSight.get(j);
+                int currentRow = currentLocation.getRow();
+                int currentColumn = currentLocation.getColumn();
+                if (localMap.getWindow()[currentRow][currentColumn] == 1) {
+                    int distance = (int) MapLocation.distance(robot.getLocalRobotLocation(), currentLocation);
+                    distances[i] = distance;
+                    break;
+                }
+                
+            }
+        }
+    }
+    
+    /*
+    private int getFrontDistance() {
+        MapLocation lineOfSightStart
+        
+        for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
+            if (localMap.getWindow()[localMap.getCenterRow()+i][localMap.getCenterColumn()] == 1) {
+                return i;
+            }
+        }
+        return robot.getLineOfSight()/2;
+    }
+*/
     
     private int getLeftDistance() {
         for (int i = 1; i < robot.getLineOfSight()/cellSize+1; i++) {
