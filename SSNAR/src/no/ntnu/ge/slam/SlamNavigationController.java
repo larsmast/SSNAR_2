@@ -37,7 +37,7 @@ public class SlamNavigationController extends Thread {
     private int[] distances;
     private final int cellSize = 2;
     private final int frontDistanceLimit = 20; //map cells
-    private final int sideDistanceLimit = frontDistanceLimit;
+    private final int sideDistanceLimit = 10;
     
     
     private enum Direction {
@@ -53,7 +53,7 @@ public class SlamNavigationController extends Thread {
         rightDistance = frontDistance;
         leftDiagonalDistance = frontDistance;
         rightDiagonalDistance = frontDistance;
-        distances = new int[3];
+        distances = new int[5];
     }
     
     @Override
@@ -71,7 +71,6 @@ public class SlamNavigationController extends Thread {
     @Override
     public void run() {
         setName("Slam navigation controller");
-        int numcycles = 41; //hack
         moveStop();
         while (true) {
             try {
@@ -87,46 +86,42 @@ public class SlamNavigationController extends Thread {
             if (!robot.isBusy()) {
                 moveForward();
             }
-            //++numcycles;
-            if (numcycles > 40) {
-                checkSurroundings();
-                if (leftDistance < sideDistanceLimit || leftDiagonalDistance < sideDistanceLimit) {
-                    turnRight();
-                    while (!robot.isRotationFinished()) {
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {}
-                    }
+            
+            checkSurroundings();
+            if (leftDistance < sideDistanceLimit || leftDiagonalDistance < sideDistanceLimit) {
+                turnRight();
+                while (robot.isBusy()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {}
                 }
-                if (rightDistance < sideDistanceLimit) {
-                    turnLeft();
-                    while (!robot.isRotationFinished()) {
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {}
-                    }
+            }
+            if (rightDistance < sideDistanceLimit || rightDiagonalDistance < sideDistanceLimit) {
+                turnLeft();
+                while (robot.isBusy()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {}
                 }
-                //numcycles = 0;
             }
             
-            
             if (frontDistance < frontDistanceLimit) {
-                moveStop();
+                //moveStop();
                 Direction turnDirection = decideDirection();
                 switch (turnDirection) {
                     case LEFT:
                         turnLeft();
-                        while (!robot.isRotationFinished()) {
+                        while (robot.isBusy()) {
                             try {
-                                Thread.sleep(2000);
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {}
                         }
                         break;
                     case RIGHT:
                         turnRight();
-                        while (!robot.isRotationFinished()) {
+                        while (robot.isBusy()) {
                             try {
-                                Thread.sleep(2000);
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {}
                         }
                         break;
@@ -160,9 +155,10 @@ public class SlamNavigationController extends Thread {
             return Direction.BACKWARDS;
         } else {
             if (debug) {
-                System.out.println("Direction decision: FORWARD");
+                System.out.println("Default direction decision");
+                System.out.println("Direction decision: RIGHT");
             }
-            return Direction.FORWARD;
+            return Direction.RIGHT;
         }
     }
     
@@ -172,14 +168,17 @@ public class SlamNavigationController extends Thread {
         if (frontDistance < frontDistanceLimit) {
             moveStop();
         }
-        /*
-        leftDiagonalDistance = getLeftDiagonalDistance();
+        
+        //leftDiagonalDistance = getLeftDiagonalDistance();
         if (leftDiagonalDistance < frontDistanceLimit) {
             moveStop();
         }
-        */
+        
         //leftDistance = getLeftDistance();
         if (leftDistance < sideDistanceLimit) {
+            moveStop();
+        }
+        if (rightDiagonalDistance < frontDistanceLimit) {
             moveStop();
         }
         //rightDistance = getRightDistance();
@@ -204,10 +203,10 @@ public class SlamNavigationController extends Thread {
     
     private void findDistances() {
         Angle lineOfSightAngle = Angle.sum(robot.getPose().getHeading(), new Angle(-90));
-        for (int i = 0; i < 3; i++) { //left, forward, right
+        for (int i = 0; i < 5; i++) { //left, forward, right, + diagonals
             distances[i] = robot.getLineOfSight()/cellSize; // reset
             if (i > 0) {
-                lineOfSightAngle.add(90);
+                lineOfSightAngle.add(45);
             }
             Position offset = Utilities.polar2cart(lineOfSightAngle, robot.getLineOfSight());
             MapLocation mapOffset = new MapLocation((int) offset.getYValue()/cellSize, (int) offset.getXValue()/cellSize);
@@ -226,8 +225,10 @@ public class SlamNavigationController extends Thread {
         }
         
         rightDistance = distances[0];
-        frontDistance = distances[1];
-        leftDistance = distances[2];
+        rightDiagonalDistance = distances[1];
+        frontDistance = distances[2];
+        leftDiagonalDistance = distances[3];
+        leftDistance = distances[4];
         
         if (debug) {
             System.out.println("Front distance: " + frontDistance);
