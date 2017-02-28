@@ -6,15 +6,12 @@
  */
 package no.ntnu.ge.slam;
 
-import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import no.ntnu.et.general.Angle;
-import no.ntnu.et.general.Line;
 import no.ntnu.et.general.Position;
 import no.ntnu.et.general.Utilities;
 import no.ntnu.et.map.MapLocation;
-import static no.ntnu.et.map.MapLocation.getOctant;
 import static no.ntnu.et.mapping.MappingController.getLineBetweenPoints;
 import no.ntnu.et.simulator.SlamRobot;
 
@@ -27,8 +24,6 @@ public class SlamNavigationController extends Thread {
     private boolean debug = true;
     private SlamRobot robot;
     private LocalMap localMap;
-    private boolean collision = false;
-    private int[][] windowArray;
     private int frontDistance;
     private int leftDistance;
     private int rightDistance;
@@ -39,7 +34,6 @@ public class SlamNavigationController extends Thread {
     private final int frontDistanceLimit = 20; //map cells
     private final int sideDistanceLimit = 10;
     
-    
     private enum Direction {
         FORWARD, LEFT, RIGHT, BACKWARDS
     }
@@ -47,7 +41,6 @@ public class SlamNavigationController extends Thread {
     public SlamNavigationController(SlamRobot robot) {
         this.robot = robot;
         localMap = robot.getWindowMap();
-        windowArray = localMap.getWindow();
         frontDistance = robot.getLineOfSight()/cellSize;
         leftDistance = frontDistance;
         rightDistance = frontDistance;
@@ -83,105 +76,92 @@ public class SlamNavigationController extends Thread {
                 continue;
             }
             
-            if (!robot.isBusy()) {
-                moveForward();
-            }
-            
             checkSurroundings();
-            if (leftDistance < sideDistanceLimit || leftDiagonalDistance < sideDistanceLimit) {
-                turnRight();
-                while (robot.isBusy()) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
-                }
-            }
-            if (rightDistance < sideDistanceLimit || rightDiagonalDistance < sideDistanceLimit) {
-                turnLeft();
-                while (robot.isBusy()) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
-                }
-            }
-            
-            if (frontDistance < frontDistanceLimit) {
-                //moveStop();
+            if (!robot.isBusy()) {
                 Direction turnDirection = decideDirection();
-                switch (turnDirection) {
-                    case LEFT:
-                        turnLeft();
-                        while (robot.isBusy()) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {}
-                        }
-                        break;
-                    case RIGHT:
-                        turnRight();
-                        while (robot.isBusy()) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {}
-                        }
-                        break;
-                    case BACKWARDS:
-                        //
-                        break;
-                    case FORWARD:
-                        break;
-                }
+                try {
+                    switch (turnDirection) {
+                        case LEFT:
+                            turnLeft();
+                            Thread.sleep(1500);
+                            break;
+                        case RIGHT:
+                            turnRight();
+                            Thread.sleep(1500);
+                            break;
+                        case BACKWARDS:
+                            moveBackwards();
+                            Thread.sleep(1500);
+                            break;
+                        case FORWARD:
+                            moveForward();
+                            break;
+                    }
+                } catch (InterruptedException e) {}
+                
             }
             
         }
     }
     
     private Direction decideDirection() {
-        checkSurroundings();
-        if (leftDistance > rightDistance && leftDistance > frontDistance) {
+        if (frontDistance < frontDistanceLimit) {
+            if (leftDiagonalDistance < frontDistanceLimit && leftDiagonalDistance < rightDiagonalDistance) {
+                if (debug) {
+                    System.out.println("Direction decision: RIGHT");
+                }
+                return Direction.RIGHT;
+            } else if (rightDiagonalDistance < frontDistanceLimit && rightDiagonalDistance < leftDiagonalDistance) {
+                if (debug) {
+                    System.out.println("Direction decision: LEFT");
+                }
+                return Direction.LEFT;
+            } else if (leftDistance < sideDistanceLimit && rightDistance < sideDistanceLimit) {
+                if (debug) {
+                    System.out.println("Direction decision: BACKWARDS");
+                }
+                return Direction.BACKWARDS;
+            } else {
+                if (debug) {
+                    System.out.println("Direction decision: RIGHT (default)");
+                }
+                return Direction.RIGHT;
+            }
+            
+        } else if (leftDistance < sideDistanceLimit && leftDiagonalDistance < sideDistanceLimit) {
+            if (debug) {
+                System.out.println("Direction decision: RIGHT");
+            }
+            return Direction.RIGHT;
+            
+        } else if (rightDistance < sideDistanceLimit && rightDiagonalDistance < sideDistanceLimit) {
             if (debug) {
                 System.out.println("Direction decision: LEFT");
             }
             return Direction.LEFT;
-        } else if (rightDistance > leftDistance && rightDistance > frontDistance) {
-            if (debug) {
-                System.out.println("Direction decision: RIGHT");
-            }
-            return Direction.RIGHT;
-        } else if (leftDistance < sideDistanceLimit && rightDistance < sideDistanceLimit && frontDistance < frontDistanceLimit) {
-            if (debug) {
-                System.out.println("Direction decision: BACKWARDS");
-            }
-            return Direction.BACKWARDS;
+            
         } else {
             if (debug) {
-                System.out.println("Default direction decision");
-                System.out.println("Direction decision: RIGHT");
+                System.out.println("Decide direction failed, default decision: FORWARD");
             }
-            return Direction.RIGHT;
+            return Direction.FORWARD;
         }
     }
     
     private void checkSurroundings() {
         findDistances();
-        //frontDistance = getFrontDistance();
         if (frontDistance < frontDistanceLimit) {
             moveStop();
         }
-        
-        //leftDiagonalDistance = getLeftDiagonalDistance();
         if (leftDiagonalDistance < frontDistanceLimit) {
             moveStop();
         }
-        
-        //leftDistance = getLeftDistance();
         if (leftDistance < sideDistanceLimit) {
             moveStop();
         }
         if (rightDiagonalDistance < frontDistanceLimit) {
             moveStop();
         }
-        //rightDistance = getRightDistance();
         if (rightDistance < sideDistanceLimit) {
             moveStop();
         }
@@ -231,7 +211,9 @@ public class SlamNavigationController extends Thread {
         leftDistance = distances[4];
         
         if (debug) {
-            System.out.println("Front distance: " + frontDistance);
+            System.out.println("Left: " + leftDistance + ", LeftDiag: " + leftDiagonalDistance +
+            ", Front: " + frontDistance + ", RightDiag: " + rightDiagonalDistance +
+                    ", Right: " + rightDistance);
             System.out.println("Find distances done");
         }
     }
@@ -287,7 +269,7 @@ public class SlamNavigationController extends Thread {
     }
     
     private void turnLeft() {
-        robot.setTarget(90, 0);
+        robot.setTarget(45, 0);
         robot.setBusy(true);
         if (debug) {
             System.out.println("Turning left");
@@ -295,10 +277,18 @@ public class SlamNavigationController extends Thread {
     }
     
     private void turnRight() {
-        robot.setTarget(-90, 0);
+        robot.setTarget(-45, 0);
         robot.setBusy(true);
         if (debug) {
             System.out.println("Turning right");
+        }
+    }
+    
+    private void moveBackwards() {
+        robot.setTarget(180, 1000);
+        robot.setBusy(true);
+        if (debug) {
+            System.out.println("Moving backwards");
         }
     }
     
@@ -308,10 +298,6 @@ public class SlamNavigationController extends Thread {
         if (debug) {
             System.out.println("Stopping");
         }
+        
     }
-    
-    
-    
-    
-    
 }

@@ -26,7 +26,6 @@ public class SlamRobot extends SimRobot {
     private LinkedBlockingQueue<int[]> updateQueue;
     private boolean busyFlag = false;
     private final Object busyLock = new Object();
-    private boolean inWallCollision = false;
     private int[] irHeading;
     private int lineOfSight = 40; //cm
     private MapLocation globalRobotLocation;
@@ -65,34 +64,12 @@ public class SlamRobot extends SimRobot {
         return localRobotLocation;
     }
     
-    /*
-    public void setRobotOrientation(int orientation) {
-        robotOrientation = orientation;
-    }
-    
-    public int getRobotOrientation() {
-        return robotOrientation;
-    }
-    */
-    
     public LocalMap getWindowMap() {
         return localMap;
     }
     
     public LinkedBlockingQueue<int[]> getUpdateQueue() {
         return updateQueue;
-    }
-    
-    public boolean getInWallCollision() {
-        return inWallCollision;
-    }
-    
-    public void setInWallCollision(boolean bool){
-        inWallCollision = bool;
-    }
-    
-    public boolean isInCollisionManagement() {
-        return inWallCollision; // Maybe add robotCollision here if implemented
     }
     
     /**

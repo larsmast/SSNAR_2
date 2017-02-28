@@ -37,7 +37,6 @@ abstract public class SimRobot {
     final private double towerSpeed = 0.25;
     private int towerDirection;
     final private Object movementLock = new Object();
-    final private Object rotationLock = new Object();
     final private double maxVisualLength = 80;
     final private double minVisualLength = 10;
     private double[] lastIrMeasurement;
@@ -144,9 +143,7 @@ abstract public class SimRobot {
     }
     
     public boolean isRotationFinished() {
-        synchronized (rotationLock) {
-            return rotationFinished;
-        }
+        return rotationFinished;
     }
     
     /**
