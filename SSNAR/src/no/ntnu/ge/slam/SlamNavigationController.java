@@ -127,6 +127,17 @@ public class SlamNavigationController extends Thread {
                 }
                 return Direction.RIGHT;
             }
+        
+        } else if (leftDiagonalDistance < frontDistanceLimit) {
+            if (debug) {
+                System.out.println("Direction decision: RIGHT");
+            }
+            return Direction.RIGHT;
+        } else if (rightDiagonalDistance < frontDistanceLimit) {
+            if (debug) {
+                System.out.println("Direction decision: LEFT");
+            }
+            return Direction.LEFT;
             
         } else if (leftDistance < sideDistanceLimit && leftDiagonalDistance < sideDistanceLimit) {
             if (debug) {
