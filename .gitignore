@@ -4,6 +4,5 @@ SSNAR/nbbuild/
 SSNAR/dist/
 SSNAR/nbdist/
 .nb-gradle/
-*.dll
 *.class
 *.log
