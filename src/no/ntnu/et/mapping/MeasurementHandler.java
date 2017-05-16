@@ -14,20 +14,19 @@ import no.ntnu.tem.robot.Robot;
 
 /**
  * This class is used to find the location of the robot and each IR-measurement
- * in the map. 
- * 
+ * in the map.
+ *
  * @author Eirik Thon
  */
-
 public class MeasurementHandler {
-    final private  Pose initialPose;
+
+    final private Pose initialPose;
     private int sensorRange;
     private Measurement currentMeasurement;
     private Pose robotPose;
     private Sensor[] sensors;
     private Robot robot;
 
-    
     public MeasurementHandler(Robot robot, Pose initialPose) {
         this.initialPose = initialPose;
         this.robot = robot;
@@ -37,17 +36,17 @@ public class MeasurementHandler {
             sensors[i] = new Sensor();
         }
     }
-    
-    boolean updateMeasurement(){
+
+    boolean updateMeasurement() {
         currentMeasurement = robot.getMeasurement();
-        if(currentMeasurement== null){
+        if (currentMeasurement == null) {
             return false;
         }
         Position robotPosition = new Position((double) currentMeasurement.getxPos(), (double) currentMeasurement.getyPos());
         Angle robotAngle = new Angle(currentMeasurement.getTheta());
         robotPose = new Pose(robotPosition, robotAngle);
         robotPose.transform(this.initialPose);
-        
+
         // Update sensor data
         int[] irData = currentMeasurement.getIRdata();
         int[] irheading = currentMeasurement.getIRHeading();
@@ -56,10 +55,10 @@ public class MeasurementHandler {
             if (measurementDistance == 0 || measurementDistance > sensorRange) {
                 sensors[i].setMeasurement(false);
                 measurementDistance = sensorRange;
-            }else{
+            } else {
                 sensors[i].setMeasurement(true);
             }
-            Angle towerAngle  = new Angle((double)irheading[i]);
+            Angle towerAngle = new Angle((double) irheading[i]);
             Angle sensorAngle = Angle.sum(towerAngle, robotPose.getHeading());
             double xOffset = measurementDistance * Math.cos(Math.toRadians(sensorAngle.getValue()));
             double yOffset = measurementDistance * Math.sin(Math.toRadians(sensorAngle.getValue()));
@@ -68,16 +67,25 @@ public class MeasurementHandler {
         }
         return true;
     }
-    
-    Position getRobotPosition(){
+
+    Position getRobotPosition() {
         return robotPose.getPosition();
     }
-    
-    Angle getRobotHeading(){
+
+    Angle getRobotHeading() {
         return robotPose.getHeading();
     }
-        
-    Sensor[] getIRSensorData(){
+
+    Sensor[] getIRSensorData() {
         return sensors;
     }
+
+    int[] getSensorAngel() {
+        return currentMeasurement.getIRHeading();
+    }
+
+    public Measurement getCurrentMeasurement() {
+        return currentMeasurement;
+    }
+
 }

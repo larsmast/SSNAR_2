@@ -51,6 +51,7 @@ public class PathPlanningFunctions {
                     existingSuccessor.setPrevious(currentNode);
                     existingSuccessor.setTraversedCost(successor.getTraversedCost());
                 }
+                
             }
         }
         return null;
@@ -144,6 +145,7 @@ public class PathPlanningFunctions {
     static ArrayList<Position> generateWaypoints(GridMap map, ArrayList<MapLocation> path) {
         ArrayList<Position> waypoints = new ArrayList<Position>();
         MapLocation currentWaypoint = path.get(0);
+       
         MapLocation next = path.get(0);
         MapLocation finalLocation = path.get(path.size()-1);
         double threshold = 15;

@@ -14,6 +14,7 @@ import no.ntnu.tem.robot.Robot;
  * This class represents the robot-specific info window, containing information
  * about the robots position, orientation and corrupt message count. It provides
  * a button for opening the manual command window.
+ *
  * @author Thor Eivind and Mats (Master 2016 @ NTNU)
  */
 public class RobotInfoGUI extends javax.swing.JFrame {
@@ -21,7 +22,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
     private Robot robot;
     private MainGUI mainGUI;
     private ManualDriveGUI manualDriveGUI;
-    
+
     /**
      * Constructor of the class RobotInfoGUI
      */
@@ -31,6 +32,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
 
     /**
      * Second constructor of the class RobotInfoGUI
+     *
      * @param r robot to associate with the gui
      * @param mainGUI the main window of the application
      */
@@ -53,6 +55,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        Home1 = new javax.swing.JButton();
         lblRobotName = new javax.swing.JLabel();
         pnlAttributes = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -64,9 +67,20 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         lblRobotOrientation = new javax.swing.JLabel();
         lblCorrupt = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        lblBattery = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnManualDrive = new javax.swing.JButton();
         btnDiscRobot = new javax.swing.JButton();
+        Home = new javax.swing.JButton();
+        Continue = new javax.swing.JButton();
+
+        Home1.setText("Go home");
+        Home1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Home1ActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -102,6 +116,12 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setText("Corrupt messages:");
 
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel8.setText("Battery:");
+
+        lblBattery.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        lblBattery.setText("9999");
+
         javax.swing.GroupLayout pnlAttributesLayout = new javax.swing.GroupLayout(pnlAttributes);
         pnlAttributes.setLayout(pnlAttributesLayout);
         pnlAttributesLayout.setHorizontalGroup(
@@ -118,16 +138,21 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblyPos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblyPos))
+                    .addGroup(pnlAttributesLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblCorrupt)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlAttributesLayout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblRobotOrientation, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlAttributesLayout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblCorrupt)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblBattery, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         pnlAttributesLayout.setVerticalGroup(
@@ -144,7 +169,10 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(lblCorrupt)))
+                    .addComponent(lblCorrupt)
+                    .addGroup(pnlAttributesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel8)
+                        .addComponent(lblBattery))))
         );
 
         btnManualDrive.setText("Manual Drive");
@@ -161,6 +189,20 @@ public class RobotInfoGUI extends javax.swing.JFrame {
             }
         });
 
+        Home.setText("Go home");
+        Home.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HomeActionPerformed(evt);
+            }
+        });
+
+        Continue.setText("Continue");
+        Continue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ContinueActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -168,16 +210,26 @@ public class RobotInfoGUI extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnManualDrive, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Home, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(Continue)
+                .addGap(9, 9, 9)
                 .addComponent(btnDiscRobot, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(btnManualDrive)
-                .addComponent(btnDiscRobot))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnManualDrive)
+                    .addComponent(btnDiscRobot)
+                    .addComponent(Home)
+                    .addComponent(Continue))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
+
+        Home.getAccessibleContext().setAccessibleName("Go home");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -194,8 +246,7 @@ public class RobotInfoGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlAttributes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -210,12 +261,34 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnDiscRobotActionPerformed
 
+    private void HomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HomeActionPerformed
+        robot.setGoingHome(true);
+        robot.setAtBase(false);
+        robot.setDock(true);
+    }//GEN-LAST:event_HomeActionPerformed
+
+    private void Home1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Home1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Home1ActionPerformed
+
+    private void ContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ContinueActionPerformed
+            robot.setGoingHome(false);
+        robot.setConfirmPose(false);
+        robot.setDock(false);
+        robot.setAtBase(false);
+        robot.setHome(false);
+        robot.setRobotAligned(false);
+        robot.setAdjustRobot(6);
+    }//GEN-LAST:event_ContinueActionPerformed
+
+
     /**
      * Method that starts the thread that updates the info in the window
      */
-    private void startThread(){
-        Thread updateThread = new Thread(robot.getName()+" Info Updater") {
+    private void startThread() {
+        Thread updateThread = new Thread(robot.getName() + " Info Updater") {
             boolean running = true;
+
             @Override
             public void run() {
                 while (running) {
@@ -241,17 +314,17 @@ public class RobotInfoGUI extends javax.swing.JFrame {
 
     /**
      * Method that modifies the visibility of the window
+     *
      * @param b true if visible
      */
     @Override
     public void setVisible(boolean b) {
-        if(b){
-           startThread();
+        if (b) {
+            startThread();
         }
         super.setVisible(b);
     }
-    
-    
+
     /**
      * Method for updating the parameters
      */
@@ -259,10 +332,29 @@ public class RobotInfoGUI extends javax.swing.JFrame {
         lblRobotOrientation.setText("" + robot.getRobotOrientation());
         lblxPos.setText("" + robot.getPosition()[0]);
         lblyPos.setText("" + robot.getPosition()[1]);
-        lblCorrupt.setText(""+robot.getCorruptCount());
+        lblCorrupt.setText("" + robot.getCorruptCount());
+                double batLvl = robot.getBat();
+        double ToDisp = Math.round(batLvl * 100.0) / 100.0;
+        if (!robot.isGoingHome()) {
+            if (robot.getBat() < 1023) {
+                batLvl = ((robot.getBat() * 2.56) / 1023) * 4.5;
+                ToDisp = Math.round(batLvl * 100.0) / 100.0;
+                if (batLvl < ToDisp) {
+                    lblBattery.setText("" + ToDisp);
+                }
+            } else {
+                if (batLvl < ToDisp) {
+                    ToDisp = Math.round(batLvl * 100.0) / 100.0;
+                    lblBattery.setText("" + ToDisp);
+                }
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Continue;
+    private javax.swing.JButton Home;
+    private javax.swing.JButton Home1;
     private javax.swing.JButton btnDiscRobot;
     private javax.swing.JButton btnManualDrive;
     private javax.swing.JLabel jLabel2;
@@ -270,7 +362,9 @@ public class RobotInfoGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblBattery;
     private javax.swing.JLabel lblCorrupt;
     private javax.swing.JLabel lblRobotName;
     private javax.swing.JLabel lblRobotOrientation;

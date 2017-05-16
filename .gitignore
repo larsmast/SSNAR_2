@@ -6,3 +6,6 @@ SSNAR/nbdist/
 .nb-gradle/
 *.class
 *.log
+/nbproject/private/
+/build/
+/dist/

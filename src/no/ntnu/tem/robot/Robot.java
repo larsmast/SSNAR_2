@@ -6,7 +6,10 @@
  */
 package no.ntnu.tem.robot;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import no.ntnu.et.general.Position;
+import org.ejml.simple.SimpleMatrix;
 
 /**
  * This class represents each robot. It holds the robot's parameters and
@@ -19,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Thor Eivind and Mats (Master 2016 @ NTNU)
  */
 public class Robot {
+
     private final int id;
     private final String name;
     private final int width, length, axleOffset;
@@ -37,6 +41,30 @@ public class Robot {
     private int ValueCorruptCount = 0;
     private int address;
     private boolean connected;
+
+    //  DOCKING added LMS
+    private boolean rangeScanBase;
+    private boolean stuckFlag;
+    private boolean baseFlag;
+    private boolean dockReady;
+    private final Object baseLock = new Object();
+    private boolean homeFlag;
+    private boolean confirmPose;
+    private boolean robotAligned;
+    public ArrayList<Position> S_REF = new ArrayList<Position>();
+    public ArrayList<Position> S_NEW = new ArrayList<Position>();
+    private SimpleMatrix realPose;
+    private int adjustRobot;
+    private int adjustDirection;
+    private int backUpDist;
+
+    private final Object homeLock = new Object();
+    private boolean goingHomeFlag;
+    private final Object goingHomeLock = new Object();
+
+    private int batteryLevel;
+    private final int[] basePosition;
+
     /**
      * Constructor of the class Robot
      *
@@ -58,6 +86,7 @@ public class Robot {
         this.name = name;
         this.width = width;
         this.length = length;
+        this.batteryLevel = 1023;
         this.messageDeadline = messageDeadline;
         this.axleOffset = axleOffset;
         this.towerOffset = towerOffset;
@@ -68,6 +97,18 @@ public class Robot {
         this.initialPosition = new int[]{0, 0, 0};
         this.estimatedPosition = new int[]{0, 0};
         this.destination = new int[]{0, 0};
+
+        // Added LMS
+        this.baseFlag = false;
+        this.dockReady = true;
+        this.rangeScanBase = false;
+        this.homeFlag = true;
+        this.robotAligned = false;
+        this.confirmPose = false;
+        this.adjustRobot = -1;
+        this.adjustDirection = 0;
+        this.backUpDist = 0;
+        this.basePosition = new int[]{0, 35, 0};
     }
 
     /**
@@ -89,12 +130,15 @@ public class Robot {
     public int[] getInitialPosition() {
         return this.initialPosition;
     }
+
     public boolean isConnected() {
         return connected;
     }
+
     public void setConnected(boolean con) {
         connected = con;
     }
+
     /**
      * Puts a Measurement at the end of the measurement queue. This method is
      * thread safe and will never block. It can throw a NullPointerExeption if
@@ -146,6 +190,7 @@ public class Robot {
     public String getName() {
         return name;
     }
+
     /**
      * Method that returns the robots address
      *
@@ -298,5 +343,172 @@ public class Robot {
      */
     public int getCorruptCount() {
         return messageCorruptCount + ValueCorruptCount;
+    }
+
+    // Added LMS
+    public void setDock(boolean dock) {
+        this.dockReady = dock;
+    }
+
+    /*
+    * Method that sets robot ready for docking
+    *
+     */
+    public boolean isDockReady() {
+        return dockReady;
+    }
+
+    public void setConfirmPose(boolean confirm) {
+        this.confirmPose = confirm;
+    }
+
+    public boolean confirmPose() {
+        return confirmPose;
+    }
+
+    /*Update the battery level*/
+    public void updateBattery(int level) {
+        this.batteryLevel = level;
+        System.out.println(level);
+    }
+
+    public int getBat() {
+        return this.batteryLevel;
+    }
+
+    /*  Check battery   */
+    public void checkBattery() {
+        if (this.batteryLevel < 900) {
+            this.setGoingHome(true);
+            System.out.println("Low on power, heading home!");
+        }
+    }
+
+    /**
+     * Method that returns the robots goingHomeFlag
+     *
+     * @return true if the robot is going home
+     */
+    public boolean isGoingHome() {
+        synchronized (goingHomeLock) {
+            return goingHomeFlag;
+        }
+    }
+
+    /**
+     * Method that sets the robot to status going home
+     *
+     * @param goingHomeFlag is set to true if the robot is supposed to go home
+     */
+    public void setGoingHome(boolean goingHomeFlag) {
+        synchronized (goingHomeLock) {
+            this.goingHomeFlag = goingHomeFlag;
+        }
+    }
+
+    public boolean isHome() {
+        synchronized (homeLock) {
+            return homeFlag;
+        }
+    }
+
+    /**
+     * Method that sets the robot to status going home
+     *
+     * @param homeFlag true if the robot is docked to the charger
+     */
+    public void setHome(boolean homeFlag) {
+        synchronized (homeLock) {
+            this.homeFlag = homeFlag;
+        }
+    }
+
+    public boolean isAtBase() {
+        synchronized (baseLock) {
+            return baseFlag;
+        }
+    }
+
+    public void setAtBase(boolean baseFlag) {
+        synchronized (baseLock) {
+            this.baseFlag = baseFlag;
+        }
+    }
+
+    public boolean isStuck() {
+        return this.stuckFlag;
+    }
+
+    public void setStuck(boolean stuckFlag) {
+        this.stuckFlag = stuckFlag;
+    }
+
+    public void setAdjustRobot(int adjustRobot) {
+        this.adjustRobot = adjustRobot;
+    }
+
+    public int getAdjustRobot() {
+        return adjustRobot;
+    }
+
+    public void setBackUpDist(int backUpDist) {
+        this.backUpDist = backUpDist;
+    }
+
+    public int getBackUpDist() {
+        return backUpDist;
+    }
+
+    public boolean isHomeFlag() {
+        return homeFlag;
+    }
+
+    public int getAdjustDirection() {
+        return adjustDirection;
+    }
+
+    public void setAdjustDirection(int adjustDirection) {
+        this.adjustDirection = adjustDirection;
+    }
+
+    public boolean isRobotAligned() {
+        return robotAligned;
+    }
+
+    public void setRobotAligned(boolean robotAligned) {
+        this.robotAligned = robotAligned;
+    }
+
+    public boolean isRangeScanBase() {
+        return rangeScanBase;
+    }
+
+    public void setRangeScanBase(boolean rangeScanBase) {
+        this.rangeScanBase = rangeScanBase;
+    }
+
+    public void addToREF(Position in) {
+        this.S_REF.add(in);
+    }
+
+    public void addToNEW(Position in) {
+        this.S_NEW.add(in);
+    }
+
+    public void resetNew() {
+        System.out.println("NEW-list is cleared");
+        this.S_NEW.clear();
+    }
+
+    public void setRealPose(SimpleMatrix realPose) {
+        this.realPose = realPose;
+    }
+
+    public double getRealPose(int row, int col) {
+        return realPose.get(row, col);
+    }
+    
+        public int[] getBasePosition() {
+        return this.basePosition;
     }
 }
