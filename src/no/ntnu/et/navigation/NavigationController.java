@@ -142,22 +142,33 @@ public class NavigationController extends Thread {
                 int id = applicationRobot.getId();
                 if (applicationRobot.isHome() && !applicationRobot.isGoingHome()) {
                     application.writeCommandToRobot(id, name, 0, 35);
-                    System.out.println("Send to correct point!");
+                    if (debug) {
+                        System.out.println("Send to correct point!");
+                    }
                     while (applicationRobot.isDockReady()) {
                         // When robot arrives at point 0,35 it starts the S_ref scan
                         if (!applicationRobot.isBusy() && !applicationRobot.isRangeScanBase()) {
                             System.out.println("SCAN S_REF!");
                             applicationRobot.setRangeScanBase(true);
+                            if (debug) {
+                                System.out.println("SCAN S_REF!");
+                            }
                         }
                     }
                 } else if (applicationRobot.isAtBase() && applicationRobot.isGoingHome() && applicationRobot.isDockReady()) {
                     application.writeCommandToRobot(id, name, -(applicationRobot.getRobotOrientation() - 90), 0);
-                    System.out.println("RETURNED TO BASE. DOCKING -> TRUE!!!");
+                    applicationRobot.setRangeScanBase(true);
+                    if (debug) {
+                        System.out.println("RETURNED TO BASE. DOCKING -> TRUE!!!");
+                    }
+
                     applicationRobot.setHome(true);
 
                     while (applicationRobot.isDockReady()) {
                         if (!applicationRobot.isBusy() && !applicationRobot.isRangeScanBase() && applicationRobot.isHome()) {
-                            System.out.println("SCAN S_NEW!!!!! range scan -> TRUE");
+                            if (debug) {
+                                System.out.println("SCAN S_NEW!!!!! range scan -> TRUE");
+                            }
                             applicationRobot.setRangeScanBase(true);
                         }
                     }
@@ -201,55 +212,48 @@ public class NavigationController extends Thread {
                             // After the TransformationAlg is preformed send the robot to correct position
                             Position nextWaypoint = new Position((int) applicationRobot.getRealPose(0, 0), (int) applicationRobot.getRealPose(1, 0));
                             Position currentPosition = new Position(applicationRobot.getPosition());
-                            System.out.println("TARGET: " + nextWaypoint.getXValue() + ", " + nextWaypoint.getYValue());
-                            System.out.println("Distance to target: " + Position.distanceBetween(currentPosition, nextWaypoint));
+                            if (debug) {
+                                System.out.println("TARGET: " + nextWaypoint.getXValue() + ", " + nextWaypoint.getYValue());
+                                System.out.println("Distance to target: " + Position.distanceBetween(currentPosition, nextWaypoint));
+                            }
+
                             int[] newCommand = findCommandToTargetPoint(nextWaypoint, currentPosition, applicationRobot.getRobotOrientation());
                             if (Position.distanceBetween(currentPosition, nextWaypoint) > 1) {
                                 application.writeCommandToRobot(id, name, newCommand[0], newCommand[1]);
-                                System.out.println("Sending to case two, position is updated..");
+
                                 applicationRobot.setPosition(applicationRobot.getBasePosition());
                                 applicationRobot.setAdjustRobot(2);
-                                
-                               
                             } else {
-                                System.out.println("Sending to case two, no need for adjustment on position");
+
                                 applicationRobot.setAdjustRobot(2);
                             }
-                            
-
                             break;
                         case 2:
-
                             // Turn robot to what it thinks is 90 degrees
                             if (!applicationRobot.isBusy()) {
-                                System.out.println("Rotating to what I thing is 90 degrees..");
                                 application.writeCommandToRobot(id, name, -(applicationRobot.getRobotOrientation() - 90), 0);
-                                System.out.println("Sending to case three");
                                 applicationRobot.setAdjustRobot(3);
-
                             }
                             break;
                         case 3:
                             // Adjust for error in orientation
                             if (!applicationRobot.isBusy()) {
-                                System.out.println("Adjusting rotation -> " + applicationRobot.getAdjustDirection() );
                                 application.writeCommandToRobot(id, name, applicationRobot.getAdjustDirection(), 0);
                                 applicationRobot.setAdjustRobot(4);
                                 applicationRobot.setAdjustDirection(0);
-                                System.out.println("Sending to case four");
                             }
                             break;
                         case 4:
                             // Find wall inside charging station
                             if (!applicationRobot.isBusy()) {
                                 if (!applicationRobot.isRobotAligned()) {
-                                    System.out.println("Waiting to scan back wall..");
+                                    if (debug) {
+                                        System.out.println("Waiting to scan back wall..");
+                                    }
                                     applicationRobot.setAdjustRobot(-3);
                                 } else {
-                                    System.out.println("Backing up! " + applicationRobot.getBackUpDist());
-                                    application.writeCommandToRobot(id, name, 0 , -applicationRobot.getBackUpDist());
+                                    application.writeCommandToRobot(id, name, 0, -applicationRobot.getBackUpDist());
                                     applicationRobot.setAdjustRobot(5);
-                                    System.out.println("Sending to case five");
                                 }
                             }
                             break;
@@ -257,7 +261,9 @@ public class NavigationController extends Thread {
 
                             // Pause robot in charger
                             if (!applicationRobot.isBusy()) {
-                                System.out.println("pausing robot");
+                                if(debug){
+                                    System.out.println("pausing robot");
+                                }
                                 applicationRobot.setAdjustRobot(0);
                                 applicationRobot.setRobotAligned(false);
                                 application.pauseRobot(id);
