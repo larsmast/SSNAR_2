@@ -1,22 +1,32 @@
-/**
- * This code is written as part of a Master Thesis
- * the spring of 2017.
+/*
+ * This code is written as a part of a Master Thesis
+ * the spring of 2016.
  *
- * Geir Eikeland (Master 2017 @ NTNU)
+ * Eirik Thon(Master 2016 @ NTNU)
  */
 package no.ntnu.et.simulator;
 
-import no.ntnu.et.general.Angle;
-import no.ntnu.et.general.Line;
-import no.ntnu.et.general.Pose;
-import no.ntnu.et.general.Position;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import no.ntnu.et.general.Utilities;
+import no.ntnu.et.general.Pose;
+import no.ntnu.et.general.Angle;
+import no.ntnu.et.general.Position;
+import no.ntnu.et.general.Line;
+import no.ntnu.tem.communication.HandshakeMessage;
+import no.ntnu.tem.communication.UpdateMessage;
 
 /**
- *
- * @author geirhei
+ * This class represents the virtual robots in the simulator. It has private
+ * variables to represent the state of the robots such as the pose
+ * The robots behavior is created by calling methods in this class such as
+ * moveRobot().
+ * 
+ * @author Eirik Thon
  */
-abstract public class SimRobot {
+public class SimRobot {
     private SimWorld world;
     private Pose pose;
     private Pose estimatedPose;
@@ -42,8 +52,15 @@ abstract public class SimRobot {
     private double[] lastIrMeasurement;
     private Position targetPosition;
     private int diameter = 10;
-    
-    public SimRobot(SimWorld world, Pose initialPose, String name, int id) {
+    private final int address;
+    /**
+     * Constructor for Robot.
+     * @param initialPose
+     * @param name
+     * @param id 
+     */
+    public SimRobot(SimWorld world, Pose initialPose, String name, int id, int address) {
+        this.address = address;
         this.world = world;
         towerDirection = 1;
         towerAngle = new Angle(0);
@@ -64,20 +81,12 @@ abstract public class SimRobot {
         targetPosition = Position.copy(pose.getPosition());
     }
     
-    public int getRobotOrientation() {
-        return (int) pose.getHeading().getValue();
-    }
-    
-    public double getMaxSensorDistance(){
+    double getMaxSensorDistance(){
         return maxVisualLength;
     }
     
     Angle getTowerAngle() {
         return towerAngle;
-    }
-    
-    double[] getLastIrMeasurement() {
-        return lastIrMeasurement;
     }
     
     /**
@@ -88,6 +97,9 @@ abstract public class SimRobot {
         return id;
     }
     
+    int getAddress() {
+        return address;
+    }
     /**
      * Returns the name of the robot
      * @return String
@@ -102,7 +114,7 @@ abstract public class SimRobot {
      * @param theta
      * @param distance 
      */
-    public void setTarget(double theta, double distance) {
+    void setTarget(double theta, double distance) {
         synchronized(movementLock) {
             targetRotation = theta;
             targetDistance = distance;
@@ -122,11 +134,11 @@ abstract public class SimRobot {
      * Creates and returns a copy of the pose
      * @return 
      */
-    public Pose getPose() {
+    Pose getPose() {
         return pose;
     }
     
-    public Pose getInitialPose() {
+    Pose getInitialPose() {
         return initialPose;
     }
     
@@ -140,10 +152,6 @@ abstract public class SimRobot {
     
     Position getTargetPosition(){
         return targetPosition;
-    }
-    
-    public boolean isRotationFinished() {
-        return rotationFinished;
     }
     
     /**
@@ -242,17 +250,34 @@ abstract public class SimRobot {
     }
     
     
-    static String generateHandshake(int robotWidth, int robotLength, int[] toweroffset, int axleoffset, int[] sensoroffset, int[] irheading, int messageDeadline) {
-        // 02 is handshake
-        return "{H," + robotWidth + "," + robotLength + "," + toweroffset[0] + "," + toweroffset[1] + "," + axleoffset + "," + sensoroffset[0] + "," + sensoroffset[1] + "," + sensoroffset[2] + "," + sensoroffset[3] + "," + irheading[0] + "," + irheading[1] + "," + irheading[2] + "," + irheading[3] + "," + messageDeadline + "}\n";
-    }
 
-    static String generateUpdate(int xPos, int yPos, int robotHeading, int towerHeading, int s1, int s2, int s3, int s4) {
-        // 01 is update
-        return "{U," + xPos + "," + yPos + "," + robotHeading + "," + towerHeading + "," + s1 + "," + s2 + "," + s3 + "," + s4 + "}\n";
+    static UpdateMessage generateUpdate(int xPos, int yPos, int robotHeading, int towerHeading, int s1, int s2, int s3, int s4) {
+       
+        ByteBuffer msg = ByteBuffer.allocate(12);
+        msg.order(ByteOrder.LITTLE_ENDIAN);
+        UpdateMessage um = null;
+        try {
+            msg.putShort((short)xPos);
+            msg.putShort((short)yPos);
+            msg.putShort((short)robotHeading);
+            msg.putShort((short)towerHeading);
+            msg.put((byte)s1);
+            msg.put((byte)s2);
+            msg.put((byte)s3);
+            msg.put((byte)s4);
+            msg.rewind();
+            byte[] data = new byte[12];
+            msg.get(data);
+            um = new UpdateMessage(data);
+        } catch(Exception e) {
+            
+        }
+        return um;
     }
     
-    String getHandShakeMessage() {
+    HandshakeMessage generateHandshake() {
+        ByteBuffer msg = ByteBuffer.allocate(HandshakeMessage.BASE_LENGTH+name.length());
+        msg.order(ByteOrder.LITTLE_ENDIAN);
         int robotWidth = 40;
         int robotLength = 60;
         int toweroffset[] = {30, 40};
@@ -260,8 +285,26 @@ abstract public class SimRobot {
         int[] sensoroffset = {5, 5, 5, 5};
         int[] irheading = {0, 90, 180, 270};
         int messageDeadline = 400;
-        String robotHandshake = generateHandshake(robotWidth, robotLength, toweroffset, axleoffset, sensoroffset, irheading, messageDeadline);
-        return robotHandshake;
+        
+        HandshakeMessage hm = null;
+        try {
+            msg.put((byte)name.length());
+            msg.put(name.getBytes());
+            msg.putShort((short)robotWidth);
+            msg.putShort((short)robotLength);
+            int i;
+            for(i=0;i<2;i++) msg.put( (byte) toweroffset[i] );
+            msg.put((byte)axleoffset);
+            for(i=0;i<4;i++) msg.put((byte)sensoroffset[i]);
+            for(i=0;i<4;i++) msg.putShort((short)irheading[i]);
+            msg.putShort((short)messageDeadline);
+            byte[] data = new byte[HandshakeMessage.BASE_LENGTH+name.length()];
+            msg.rewind();
+            msg.get(data);
+            hm = new HandshakeMessage(data);
+        } catch(Exception e) {
+            
+        }
+        return hm;
     }
-    
 }
